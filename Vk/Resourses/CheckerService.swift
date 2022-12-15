@@ -11,6 +11,9 @@ import Firebase
 protocol CheckerServiceProtocol: AnyObject{
     func checkCredentials(email: String, password: String, completion: @escaping (AuthResult) -> Void)
     func signUp(email: String, password: String, completion: @escaping (AuthResult) -> Void)
+
+
+    func checkNumber(number: String, completion: @escaping (AuthResult) -> Void)
 }
 
 enum AuthResult {
@@ -19,17 +22,27 @@ enum AuthResult {
 }
 
 class CheckerService: CheckerServiceProtocol {
+    func checkNumber(number: String, completion: @escaping (AuthResult) -> Void) {
+//        FirebaseAuth.Auth.auth().signIn(number: number, completion:   { result, error in
+//            guard let _ = result else {
+//                completion(.failure(error!))
+//                return
+//            }
+//            completion(.success)
+//        })
+    }
+
 
     weak var coordinator: ProfileCoordinator?
     func checkCredentials(email: String, password: String, completion: @escaping (AuthResult) -> Void)  {
-            FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password) { result, error in
-                    guard let _ = result else {
-                        completion(.failure(error!))
-                        return
-                    }
-                completion(.success)
-                    }
-                }
+        FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password) { result, error in
+            guard let _ = result else {
+                completion(.failure(error!))
+                return
+            }
+            completion(.success)
+        }
+    }
 
     func signUp(email: String, password: String, completion: @escaping (AuthResult) -> Void) {
         Firebase.Auth.auth().createUser(withEmail: email, password: password) { result, error in
@@ -37,7 +50,7 @@ class CheckerService: CheckerServiceProtocol {
                 completion(.failure(error!))
                 return
             }
-                completion(.success)
+            completion(.success)
         }
     }
 }

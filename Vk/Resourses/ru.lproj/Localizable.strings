@@ -6,6 +6,38 @@
 
  */
 
+//MArK: SrartController
+
+"startRegistration" = "ЗАРЕГИСТРИРОВАТЬСЯ";
+
+"startLogin" = "Уже есть аккаунт";
+
+//MArK: InputViewController
+
+"inputLable" = "С возвращением";
+
+"explainInput" = "Введите номер телефона \nдля входа в приложение";
+
+"confirm" = "Подтвердить";
+
+//MArK: RegisterController
+
+"enterTheNumber" = "Введите номер";
+
+"explain" = "Ваш номер будет использоваться для входа в аккаунт";
+
+"next" = "ДАЛЕЕ";
+
+"aboutNextButtom" = "Нажимая кнопку \"Далее\" Вы принимаете пользовательское Соглашение и политику конфедициальности";
+
+//MArK: VerificationController
+
+"verificationLable" = "Подтверждение регистрации";
+
+"explainLable" = "Мы отправили SMS с кодом на номер";
+
+"enterCodeLable" = "Введите код из SMS";
+
 //MArK: General
 
 "Yes" = "Да";
@@ -56,7 +88,19 @@
 
 //MArK: ProfileHeaderView
 
-"Exit" = "Выйти";
+"detailed" = "Подробная информация";
+
+"edit" = "Редактировать";
+
+//MArK: ProfileHeaderActivityView
+
+"Empty" = "Запись";
+
+"History" ="История";
+
+"Photo" = "Фото";
+
+//"Exit" = "Выйти";
 
 //MArK: ProfileHeaderView
 
@@ -98,9 +142,9 @@
 
 // MARK: FeedViewController
 
-"anyWord" = "Любое слово";
+"newsButtomFeed" = "Новости";
 
-"CheckWord" = "Проверить слово";
+"forYouButtom" = "Для вас";
 
 // MARK: PhotosViewController
 

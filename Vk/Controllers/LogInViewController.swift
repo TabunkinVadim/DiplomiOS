@@ -15,12 +15,12 @@ class LogInViewController: UIViewController, LogInViewControllerProtocol {
     weak var delegate: LoginViewControllerDelegate?
     weak var delegateChecker: CheckerServiceProtocol?
     
-    private var isCheck = false
-    private var loginCheck = ""
-    private var passwordCheck = ""
+//    private var isCheck = false
+//    private var loginCheck = ""
+//    private var passwordCheck = ""
     private let localAutorization = LocalAuthorizationService()
 
-    private let realmCoordinator = RealmCoordinator()
+//    private let realmCoordinator = RealmCoordinator()
     private let contentView: UIView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
@@ -104,88 +104,122 @@ class LogInViewController: UIViewController, LogInViewControllerProtocol {
     private let checker = CheckerService()
     private let loginCheker: LoginInspector
 
-    private lazy var delBottom = CustomButton(title: "Delete".localized, color: .delButtomColor, colorTitle: .white, borderWith: 1, cornerRadius: 10) {
-        self.realmCoordinator.delete()
-        self.setButtomLogin()
-        self.setLocalAuthorizationButtomMini()
-    }
+//    private lazy var delBottom = CustomButton(title: "Delete".localized, color: .delButtomColor, colorTitle: .white, borderWith: 1, cornerRadius: 10) {
+//        self.realmCoordinator.delete()
+//        self.setButtomLogin()
+//        self.setLocalAuthorizationButtomMini()
+//    }
 
     private lazy var localAuthorizationButtomMini: UIButton = {
-        $0.toAutoLayout()
-        $0.layer.cornerRadius = 10
-        $0.layer.borderWidth = 1
-        $0.layer.borderColor = UIColor.lightGray.cgColor
-        $0.contentEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)
-        $0.contentVerticalAlignment = .fill
-        $0.contentHorizontalAlignment = .fill
-        $0.addAction(UIAction() {action in
-            let realm = try! Realm()
-            var items: Results<AuthorizationRealmModel>?
-            items = realm.objects(AuthorizationRealmModel.self)
-            guard let items = items else { return }
-            if items.count != 0 {
-                self.localAutorization.authorizeIfPossible { isLogin in
-                    if isLogin {
-                        DispatchQueue.main.async {
-                            self.openProfile()
-                        }
-                    }
-                }
-            } else {
-            }
-        }, for: .touchUpInside)
+//        $0.toAutoLayout()
+//        $0.layer.cornerRadius = 10
+//        $0.layer.borderWidth = 1
+//        $0.layer.borderColor = UIColor.lightGray.cgColor
+//        $0.contentEdgeInsets = .init(top: 0, left: 0, bottom: 0, right: 0)
+//        $0.contentVerticalAlignment = .fill
+//        $0.contentHorizontalAlignment = .fill
+//        $0.addAction(UIAction() {action in
+//            let realm = try! Realm()
+//            var items: Results<AuthorizationRealmModel>?
+//            items = realm.objects(AuthorizationRealmModel.self)
+//            guard let items = items else { return }
+//            if items.count != 0 {
+//                self.localAutorization.authorizeIfPossible { isLogin in
+//                    if isLogin {
+//                        DispatchQueue.main.async {
+//                            self.openProfile()
+//                        }
+//                    }
+//                }
+//            } else {
+//            }
+//        }, for: .touchUpInside)
         return $0
     }(UIButton())
 
-    private lazy var loginButtom = CustomButton(title: "Login".localized, color: .systemGray6, colorTitle: UIColor(named: "MainColor") ?? .blue , borderWith: 1, cornerRadius: 10) {
+    private lazy var loginButtom = CustomButton(title: "Login", color: .systemGray6, colorTitle: UIColor(named: "MainColor") ?? .blue , borderWith: 1, cornerRadius: 10) {
+
         guard let email = self.loginSet.text, !email.isEmpty, let password = self.passwordSet.text, !password.isEmpty else {
-            self.loginSet.attributedPlaceholder = NSAttributedString.init(string: "LoginTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
-            self.passwordSet.attributedPlaceholder = NSAttributedString.init(string: "PasswordTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+            self.loginSet.attributedPlaceholder = NSAttributedString.init(string: "Email of phone", attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+            self.passwordSet.attributedPlaceholder = NSAttributedString.init(string: "Password", attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
             return
-        }
-        if self.realmCoordinator.getCount() != 0 {
-            guard let item = self.realmCoordinator.get() else {return}
-            if item.password == password, item.email == email {
-                self.realmCoordinator.edit(item: item, isLogIn: true)
-                self.openProfile()
-            } else {
-                self.showAlert(title: "InvalidInput".localized, massege: "Repeat".localized) { _ in
-                    self.loginSet.attributedPlaceholder = NSAttributedString.init(string: "LoginTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
-                    self.passwordSet.attributedPlaceholder = NSAttributedString.init(string: "PasswordTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
-                    self.loginSet.text = ""
-                    self.passwordSet.text = ""
-                    self.setButtomLogin()
-                }
-            }
-        } else {
-            if self.isCheck {
-                if self.passwordCheck == password, self.loginCheck == email {
-                    self.realmCoordinator.create(password: password, email: email)
-                    self.openProfile()
-                } else {
-                    self.showAlert(title: "InvalidInput".localized, massege: "Repeat".localized) { _ in
-                        self.loginSet.attributedPlaceholder = NSAttributedString.init(string: "LoginTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
-                        self.passwordSet.attributedPlaceholder = NSAttributedString.init(string: "PasswordTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
-                        self.passwordCheck = ""
-                        self.loginCheck = ""
-                        self.loginSet.text = ""
-                        self.passwordSet.text = ""
-                        self.isCheck = false
-                        self.setButtomLogin()
                     }
+
+        self.delegate = self.loginCheker
+        self.delegate?.chek(login: email, pswd: password, completion: { (result) in
+            switch result {
+            case .success:
+                self.openProfile()
+            case .failure(let error):
+                if (error as NSError).code == 17011 {
+                    self.coordinator?.singUpAlert(yesAction: { _ in
+                        self.delegate?.signUp(login: email, pswd: password, completion: { (result) in
+                            switch result {
+                            case .success:
+                                self.openProfile()
+                            case .failure(let error):
+                                self.coordinator?.errorAlert(error: error, cancelAction: nil)
+                            }
+                        })
+                    }, cancelAction: nil)
                 }
-            } else {
-                self.loginCheck = email
-                self.passwordCheck = password
-                self.loginSet.attributedPlaceholder = NSAttributedString.init(string: "LoginTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
-                self.passwordSet.attributedPlaceholder = NSAttributedString.init(string: "PasswordTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
-                self.loginSet.text = ""
-                self.passwordSet.text = ""
-                self.isCheck = true
-                self.setButtomLogin()
+                else {
+                    self.coordinator?.errorAlert(error: error, cancelAction: nil)
+                }
             }
-        }
+        })
     }
+
+
+            //    private lazy var loginButtom = CustomButton(title: "Login".localized, color: .systemGray6, colorTitle: UIColor(named: "MainColor") ?? .blue , borderWith: 1, cornerRadius: 10) {
+//        guard let email = self.loginSet.text, !email.isEmpty, let password = self.passwordSet.text, !password.isEmpty else {
+//            self.loginSet.attributedPlaceholder = NSAttributedString.init(string: "LoginTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+//            self.passwordSet.attributedPlaceholder = NSAttributedString.init(string: "PasswordTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.red])
+//            return
+//        }
+//        if self.realmCoordinator.getCount() != 0 {
+//            guard let item = self.realmCoordinator.get() else {return}
+//            if item.password == password, item.email == email {
+//                self.realmCoordinator.edit(item: item, isLogIn: true)
+//                self.openProfile()
+//            } else {
+//                self.showAlert(title: "InvalidInput".localized, massege: "Repeat".localized) { _ in
+//                    self.loginSet.attributedPlaceholder = NSAttributedString.init(string: "LoginTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+//                    self.passwordSet.attributedPlaceholder = NSAttributedString.init(string: "PasswordTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+//                    self.loginSet.text = ""
+//                    self.passwordSet.text = ""
+//                    self.setButtomLogin()
+//                }
+//            }
+//        } else {
+//            if self.isCheck {
+//                if self.passwordCheck == password, self.loginCheck == email {
+//                    self.realmCoordinator.create(password: password, email: email)
+//                    self.openProfile()
+//                } else {
+//                    self.showAlert(title: "InvalidInput".localized, massege: "Repeat".localized) { _ in
+//                        self.loginSet.attributedPlaceholder = NSAttributedString.init(string: "LoginTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+//                        self.passwordSet.attributedPlaceholder = NSAttributedString.init(string: "PasswordTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+//                        self.passwordCheck = ""
+//                        self.loginCheck = ""
+//                        self.loginSet.text = ""
+//                        self.passwordSet.text = ""
+//                        self.isCheck = false
+//                        self.setButtomLogin()
+//                    }
+//                }
+//            } else {
+//                self.loginCheck = email
+//                self.passwordCheck = password
+//                self.loginSet.attributedPlaceholder = NSAttributedString.init(string: "LoginTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+//                self.passwordSet.attributedPlaceholder = NSAttributedString.init(string: "PasswordTextFieldPlaceholder".localized, attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray])
+//                self.loginSet.text = ""
+//                self.passwordSet.text = ""
+//                self.isCheck = true
+//                self.setButtomLogin()
+//            }
+//        }
+//    }
 
     func showAlert (title: String, massege: String, action:@escaping (UIAlertAction)-> Void) {
         let alert = UIAlertController(title: title, message: massege, preferredStyle: .alert)
@@ -221,51 +255,51 @@ class LogInViewController: UIViewController, LogInViewControllerProtocol {
     }
 
     private func setLocalAuthorizationButtomMini() {
-        let realm = try! Realm()
-        var items: Results<AuthorizationRealmModel>?
-        items = realm.objects(AuthorizationRealmModel.self)
-        guard let items = items else { return }
-        if items.count != 0 {
-            switch (localAutorization.biometricType) {
-            case .none:
-                localAuthorizationButtomMini.isHidden = true
-            case .touchID:
-                localAuthorizationButtomMini.setImage(UIImage(systemName: "touchid"), for: .normal)
-            case .faceID:
-                localAuthorizationButtomMini.setImage(UIImage(systemName: "faceid"), for: .normal)
-            default:
-                return
-            }
-        } else {
-            switch (localAutorization.biometricType) {
-            case .none:
-                localAuthorizationButtomMini.isHidden = true
-            case .touchID:
-                localAuthorizationButtomMini.setImage(UIImage(systemName: "touchid"), for: .normal)
-                localAuthorizationButtomMini.tintColor = .systemGray
-            case .faceID:
-                localAuthorizationButtomMini.setImage(UIImage(systemName: "faceid"), for: .normal)
-                localAuthorizationButtomMini.tintColor = .systemGray
-            default:
-                return
-            }
-        }
+//        let realm = try! Realm()
+//        var items: Results<AuthorizationRealmModel>?
+//        items = realm.objects(AuthorizationRealmModel.self)
+//        guard let items = items else { return }
+//        if items.count != 0 {
+//            switch (localAutorization.biometricType) {
+//            case .none:
+//                localAuthorizationButtomMini.isHidden = true
+//            case .touchID:
+//                localAuthorizationButtomMini.setImage(UIImage(systemName: "touchid"), for: .normal)
+//            case .faceID:
+//                localAuthorizationButtomMini.setImage(UIImage(systemName: "faceid"), for: .normal)
+//            default:
+//                return
+//            }
+//        } else {
+//            switch (localAutorization.biometricType) {
+//            case .none:
+//                localAuthorizationButtomMini.isHidden = true
+//            case .touchID:
+//                localAuthorizationButtomMini.setImage(UIImage(systemName: "touchid"), for: .normal)
+//                localAuthorizationButtomMini.tintColor = .systemGray
+//            case .faceID:
+//                localAuthorizationButtomMini.setImage(UIImage(systemName: "faceid"), for: .normal)
+//                localAuthorizationButtomMini.tintColor = .systemGray
+//            default:
+//                return
+//            }
+//        }
     }
 
     private func setButtomLogin() {
-        if isCheck {
-            self.loginButtom?.setTitle("Retype".localized, for: .normal)
-        } else {
-            let realm = try! Realm()
-            var items: Results<AuthorizationRealmModel>?
-            items = realm.objects(AuthorizationRealmModel.self)
-            guard let items = items else { return }
-            if items.count != 0 {
-                self.loginButtom?.setTitle("Login".localized, for: .normal)
-            } else {
-                self.loginButtom?.setTitle("CreateAnAccount".localized, for: .normal)
-            }
-        }
+//        if isCheck {
+//            self.loginButtom?.setTitle("Retype".localized, for: .normal)
+//        } else {
+//            let realm = try! Realm()
+//            var items: Results<AuthorizationRealmModel>?
+//            items = realm.objects(AuthorizationRealmModel.self)
+//            guard let items = items else { return }
+//            if items.count != 0 {
+//                self.loginButtom?.setTitle("Login".localized, for: .normal)
+//            } else {
+//                self.loginButtom?.setTitle("CreateAnAccount".localized, for: .normal)
+//            }
+//        }
     }
 
     @objc func loginsSeting(_ textField: UITextField){
@@ -299,7 +333,7 @@ class LogInViewController: UIViewController, LogInViewControllerProtocol {
         ])
         loginButtom!.translatesAutoresizingMaskIntoConstraints = false
 
-        contentView.addSubviews(logo, loginSet, passwordSet, loginButtom!, delBottom!, localAuthorizationButtomMini/*, guessingButtom!*/)
+        contentView.addSubviews(logo, loginSet, passwordSet, loginButtom!, /*delBottom!,*/ localAuthorizationButtomMini/*, guessingButtom!*/)
 
         NSLayoutConstraint.activate([
             logo.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 120),
@@ -336,13 +370,13 @@ class LogInViewController: UIViewController, LogInViewControllerProtocol {
             localAuthorizationButtomMini.heightAnchor.constraint(equalToConstant: 50)
         ])
 
-        NSLayoutConstraint.activate([
-            delBottom!.topAnchor.constraint(equalTo: loginButtom!.bottomAnchor, constant: 16),
-            delBottom!.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            delBottom!.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            delBottom!.heightAnchor.constraint(equalToConstant: 50),
-            delBottom!.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 10)
-        ])
+//        NSLayoutConstraint.activate([
+//            delBottom!.topAnchor.constraint(equalTo: loginButtom!.bottomAnchor, constant: 16),
+//            delBottom!.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+//            delBottom!.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+//            delBottom!.heightAnchor.constraint(equalToConstant: 50),
+//            delBottom!.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: 10)
+//        ])
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -9,6 +9,7 @@ import Foundation
 import CoreData
 import StorageService
 import UIKit
+import SwiftUI
 
 final class CoreDataCoordinator {
 
@@ -77,6 +78,40 @@ final class CoreDataCoordinator {
         } catch {
             let nserror = error as NSError
             fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+        }
+    }
+
+    func findPost(description: String) -> Int? {
+        let count = getPostCount()
+        for index in  0 ..< count  {
+            let post = getPost(postIndex: index)
+            if post?.descriptionPost == description {
+                //                deletePosts(index: index)
+                return index
+            }
+        }
+        return nil
+    }
+
+
+
+
+
+
+    
+    public func clearAllCoreData() {
+        let entities = self.persistentContainer.managedObjectModel.entities
+        entities.compactMap({ $0.name }).forEach(clearDeepObjectEntity)
+    }
+
+    private func clearDeepObjectEntity(_ entity: String) {
+        let deleteFetch = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: deleteFetch)
+        do {
+            try viewContext.execute(deleteRequest)
+            try viewContext.save()
+        } catch {
+            print ("There was an error")
         }
     }
 }

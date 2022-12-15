@@ -7,15 +7,24 @@
 
 import Foundation
 import UIKit
+import StorageService
 
 class User {
-    let fullName: String
-    let avatar: UIImage
-    let status: String
+    var nickname: String
+    var fullName: String
+    var profession: String
+    var avatar: UIImage
+    var status: String
+    var userPosts: [Post] = []
+    var userPhoto: [UIImage] = []
     
-    init(fullName: String, avatar: UIImage, status: String) {
+    init(nickname: String, fullName: String, profession: String, avatar: UIImage, status: String) {
+        self.nickname = nickname
         self.fullName = fullName
+        self.profession = profession
         self.avatar = avatar
         self.status = status
+
     }
+
 }

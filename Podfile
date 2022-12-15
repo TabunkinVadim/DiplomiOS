@@ -23,6 +23,7 @@ target 'Vk' do
   pod 'SnapKit'
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
+  pod 'FlagPhoneNumber'
 
 end
 

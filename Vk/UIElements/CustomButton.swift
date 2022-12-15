@@ -11,7 +11,7 @@ import UIKit
 class CustomButton: UIButton {
     let action: (() -> Void)
 
-    init?(title: String, color: UIColor, colorTitle: UIColor, borderWith: CGFloat,  cornerRadius: CGFloat,  action: @escaping () -> Void){
+    init?(title: String, color: UIColor?, colorTitle: UIColor, borderWith: CGFloat,  cornerRadius: CGFloat,  action: @escaping () -> Void){
         self.action = action
         super.init(frame: CGRect())
         setTitle(title, for: .normal)

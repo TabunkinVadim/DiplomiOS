@@ -13,70 +13,56 @@ class ProfileHeaderView:UITableViewHeaderFooterView  {
     weak var delegateClose:ProfileViewControllerProtocol?
     weak var coordinator: ProfileCoordinator?
     private var statusText: String = ""
-    
-    let avatarView: UIView = {
-        $0.layer.cornerRadius = 50
-        $0.layer.borderWidth = 3
-        $0.layer.borderColor = UIColor.lightGray.cgColor
-        $0.layer.masksToBounds = true
-        $0.backgroundColor = .black
-        return $0
-    }(UIView())
-    
-    var avatar: UIImageView = {
-        let image = UIImageView()
-        image.layer.cornerRadius = 50
-        image.layer.borderWidth = 3
-        image.layer.borderColor = UIColor.lightGray.cgColor
-        image.layer.masksToBounds = true
-        image.image = UIImage(named: "Avatar")
-        return image
-    }()
-    
-    var name: UILabel = {
-        let lable = UILabel()
-        lable.font = UIFont.boldSystemFont(ofSize: 18)
-        lable.textColor = .textColor
-        return lable
-    }()
 
-    private lazy var exitButtom = CustomButton(title: "Exit".localized, color: .delButtomColor, colorTitle: .textColor, borderWith: 1, cornerRadius: 10) {
-        self.delegateClose?.close()
+    private var nickName = UIElementFactory().addMediumTextLable(lable: "",
+                                                                 textColor: .textColor,
+                                                                 textSize: 16,
+                                                                 lineHeightMultiple: 1.24,
+                                                                 textAlignment: .left)
+    
+    private var avatar = UIElementFactory().addImage(imageNamed: "Avatar",
+                                                     cornerRadius: 30,
+                                                     clipsToBounds: true,
+                                                     contentMode: .scaleToFill,
+                                                     tintColor: .none,
+                                                     backgroundColor: .none)
 
+    private let name = UIElementFactory().addBoldTextLable(lable: "", textColor: .textColor,
+                                                           textSize: 18,
+                                                           textAlignment: .left)
+
+
+    private let profession = UIElementFactory().addRegularTextLable(lable: "profession",
+                                                                    textColor: .mutedTextColor,
+                                                                    textSize: 12,
+                                                                    lineHeightMultiple: 1.03,
+                                                                    textAlignment: .left)
+
+    private lazy var moreButtom = UIElementFactory().addIconButtom(icon: UIImage(systemName: "line.3.horizontal") ?? UIImage(),
+                                                                   color: .appOrange) {
+        print("More")
     }
 
-    private lazy var statusButtom = CustomButton(title: "ShowStatus".localized, color: UIColor(named: "MainColor") ?? .blue, colorTitle: .white, borderWith: 0, cornerRadius: 4) {
-        self.coordinator?.photoVC()
-        self.status.text = self.statusText
-        print(self.status.text ?? "NoStatus".localized)
+    private let infoIcon = UIElementFactory().addImage(imageNamed: "exclamationmark.circle.fill",
+                                                       cornerRadius: 10,
+                                                       clipsToBounds: true,
+                                                       contentMode: .scaleToFill,
+                                                       tintColor: .appOrange,
+                                                       backgroundColor: .none)
 
+    private lazy var infoButtom = UIElementFactory().addTextButtom(lable: "detailed".localized,
+                                                                   titleColor: .textColor,
+                                                                   contentHorizontalAlignment: .left) {
+        print("detailed information")
     }
-    
-    var status: UILabel = {
-        let lable = UILabel(frame: CGRect(x: 100, y: 400, width: 200, height: 40))
-        lable.font = UIFont.systemFont(ofSize: 14)
-        lable.text = ""
-        lable.textColor = .statusTextColor
-        return lable
-    }()
 
-    lazy var statusSet: UITextField = {
-        let field = UITextField()
-        field.font = UIFont.systemFont(ofSize: 15)
-        field.textColor = .textColor
-        field.backgroundColor = .backgroundCellColor
-        field.layer.cornerRadius = 12
-        field.layer.borderWidth = 1
-        field.layer.borderColor = UIColor.lightGray.cgColor
-        field.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: field.frame.height))
-        field.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: field.frame.height))
-        field.leftViewMode = .always
-        field.rightViewMode = .always
-        field.delegate = self
-        field.addTarget(self, action: #selector(statusTextChanged), for: .editingChanged)
-        return field
-    }()
-    
+    private lazy var editButtom = UIElementFactory().addBigButtom(lable: "edit".localized,
+                                                                  backgroundColor: .appOrange) {
+        print("edit")
+    }
+
+    private var activityView = ProfileHeaderActivityView(numberOfPublications: 1, numberOfScribes: 2, numberOfSubscriptions: 3)
+
     override init(reuseIdentifier: String?) {
         super .init(reuseIdentifier: reuseIdentifier)
     }
@@ -84,69 +70,128 @@ class ProfileHeaderView:UITableViewHeaderFooterView  {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    @objc func pressStatusButtom(_ sender:Any) {
-        status.text = statusText
-        print(status.text ?? "NoStatus".localized)
-    }
-    
-    @objc func statusTextChanged(_ textField: UITextField){
-        statusText = textField.text ?? ""
-    }
-    
+
     override func layoutSubviews() {
         super .layoutSubviews()
         
-        contentView.addSubviews(avatarView, exitButtom!, name, statusButtom!, status, statusSet)
-        avatarView.snp.makeConstraints { maker in
-            maker.top.equalToSuperview().inset(16)
-            maker.leading.equalToSuperview().inset(16)
-            maker.height.equalTo(100)
-            maker.width.equalTo(100)
-        }
+        contentView.addSubviews(nickName, avatar, moreButtom, name, profession, infoIcon, infoButtom, editButtom, activityView)
 
-        exitButtom!.snp.makeConstraints { maker in
-            maker.top.equalToSuperview().inset(16)
-            maker.trailing.equalToSuperview().inset(16)
-            maker.height.equalTo(30)
-            maker.width.equalTo(100)
-        }
+        NSLayoutConstraint.activate([
+            nickName.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 15),
+            nickName.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
+            nickName.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -40)
+        ])
+
+        NSLayoutConstraint.activate([
+            avatar.topAnchor.constraint(equalTo: nickName.bottomAnchor, constant: 14),
+            avatar.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
+            avatar.heightAnchor.constraint(equalToConstant: 60),
+            avatar.widthAnchor.constraint(equalToConstant: 60)
+        ])
+
+        NSLayoutConstraint.activate([
+            moreButtom.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 15),
+            moreButtom.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15),
+            moreButtom.heightAnchor.constraint(equalToConstant: 13),
+            moreButtom.widthAnchor.constraint(equalToConstant: 20)
+        ])
+
+        NSLayoutConstraint.activate([
+            name.topAnchor.constraint(equalTo: nickName.bottomAnchor , constant: 22),
+            name.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 10),
+            name.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25)
+        ])
+
+        NSLayoutConstraint.activate([
+            profession.topAnchor.constraint(equalTo: name.bottomAnchor , constant: 3),
+            profession.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 10),
+            profession.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25)
+        ])
+
+        NSLayoutConstraint.activate([
+            infoIcon.topAnchor.constraint(equalTo: profession.bottomAnchor , constant: 5),
+            infoIcon.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 10),
+            infoIcon.heightAnchor.constraint(equalToConstant: 20),
+            infoIcon.widthAnchor.constraint(equalToConstant: 20)
+        ])
         
-        avatarView.addSubviews(avatar)
-        avatar.snp.makeConstraints { maker in
-            maker.top.equalToSuperview()
-            maker.leading.equalToSuperview()
-            maker.trailing.equalToSuperview()
-            maker.bottom.equalToSuperview()
-        }
-        name.snp.makeConstraints { marker in
-            marker.top.equalToSuperview().inset(27)
-            marker.leading.equalTo(avatar.snp.trailing).offset(16)
-            marker.trailing.equalToSuperview().inset(16)
-        }
-        statusButtom!.snp.makeConstraints { marker in
-            marker.top.equalTo(avatar.snp.bottom).offset(16)
-            marker.leading.equalToSuperview().offset(16)
-            marker.trailing.equalToSuperview().inset(16)
-        }
-        status.snp.makeConstraints { marker in
-            marker.bottom.equalTo(statusSet.snp.top).offset(-10)
-            marker.leading.equalTo(avatar.snp.trailing).offset(16)
-            marker.trailing.equalToSuperview().inset(16)
-        }
-        statusSet.snp.makeConstraints { marker in
-            marker.bottom.equalTo(statusButtom!.snp.top).offset(-8)
-            marker.leading.equalTo(avatar.snp.trailing).offset(16)
-            marker.trailing.equalToSuperview().inset(16)
-            marker.height.equalTo(40)
-        }
+        NSLayoutConstraint.activate([
+            infoButtom.centerYAnchor.constraint(equalTo: infoIcon.centerYAnchor),
+            infoButtom.leadingAnchor.constraint(equalTo: infoIcon.trailingAnchor, constant: 8),
+            infoButtom.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25)
+        ])
+
+        NSLayoutConstraint.activate([
+            editButtom.topAnchor.constraint(equalTo: infoIcon.bottomAnchor, constant: 25),
+            editButtom.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            editButtom.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            editButtom.heightAnchor.constraint(equalToConstant: 47)
+        ])
+
+        NSLayoutConstraint.activate([
+            activityView.topAnchor.constraint(equalTo: editButtom.bottomAnchor, constant: 25),
+            activityView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            activityView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+//            activityView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        ])
+
+        //
+        //        moreButtom.snp.makeConstraints { maker in
+        //            maker.top.equalToSuperview().inset(16)
+        //            maker.trailing.equalToSuperview().inset(16)
+        //            maker.height.equalTo(30)
+        //            maker.width.equalTo(100)
+        //        }
+        
+        //        avatarView.addSubviews(avatar)
+        //        avatar.snp.makeConstraints { maker in
+        //            maker.top.equalToSuperview()
+        //            maker.leading.equalToSuperview()
+        //            maker.trailing.equalToSuperview()
+        //            maker.bottom.equalToSuperview()
+        //        }
+        //        name.snp.makeConstraints { marker in
+        //            marker.top.equalToSuperview().inset(27)
+        //            marker.leading.equalTo(avatar.snp.trailing).offset(16)
+        //            marker.trailing.equalToSuperview().inset(16)
+        //        }
+        //        statusButtom!.snp.makeConstraints { marker in
+        //            marker.top.equalTo(avatar.snp.bottom).offset(16)
+        //            marker.leading.equalToSuperview().offset(16)
+        //            marker.trailing.equalToSuperview().inset(16)
+        //        }
+        //        status.snp.makeConstraints { marker in
+        //            marker.bottom.equalTo(statusSet.snp.top).offset(-10)
+        //            marker.leading.equalTo(avatar.snp.trailing).offset(16)
+        //            marker.trailing.equalToSuperview().inset(16)
+        //        }
+        //        statusSet.snp.makeConstraints { marker in
+        //            marker.bottom.equalTo(statusButtom!.snp.top).offset(-8)
+        //            marker.leading.equalTo(avatar.snp.trailing).offset(16)
+        //            marker.trailing.equalToSuperview().inset(16)
+        //            marker.height.equalTo(40)
+        //        }
+    }
+
+    func setProfileHeader(nickName: String?, name: String?, avatar: UIImage?, profession: String? ) {
+        guard let nickName = nickName else { return }
+        self.nickName.text = nickName
+
+        guard let name = name else { return }
+        self.name.text = name
+
+        guard let avatar = avatar else { return }
+        self.avatar.image = avatar
+
+        guard let profession = profession else { return }
+        self.profession.text = profession
     }
 }
 
 extension ProfileHeaderView: UITextFieldDelegate{
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         endEditing(true)
-        pressStatusButtom(endEditing(true))
+        //        pressStatusButtom(endEditing(true))
         return true
     }
 }

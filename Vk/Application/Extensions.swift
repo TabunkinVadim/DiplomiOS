@@ -27,6 +27,25 @@ extension String {
     }
 }
 
+extension Int {
+    var localizedLikesCount: String {
+        String.localizedStringWithFormat(NSLocalizedString("NumberOfLike", comment: ""), self )
+    }
+
+    var localizedPostsCount: String {
+        String (self) + "\n" + String.localizedStringWithFormat(NSLocalizedString("NumberOfPost", comment: ""), self )
+    }
+
+    var localizedSubscriptionsCount: String {
+        String (self) + "\n" + String.localizedStringWithFormat(NSLocalizedString("NumberOfSubscription", comment: ""), self )
+    }
+
+    var localizedScribesCount: String {
+        String (self) + "\n" + String.localizedStringWithFormat(NSLocalizedString("NumberOfScribe", comment: ""), self )
+    }
+
+}
+
 extension UIColor {
     static var backgroundColor: UIColor {
         Self.makeColor(light: .systemGray6, dark: .darkGray)
@@ -39,6 +58,15 @@ extension UIColor {
     static var textColor: UIColor {
         Self.makeColor(light: .black, dark: .white)
     }
+
+    static var mutedTextColor: UIColor {
+        Self.makeColor(light: UIColor(red: 0.495, green: 0.507, blue: 0.512, alpha: 1), dark: UIColor(red: 0.495, green: 0.507, blue: 0.512, alpha: 1))
+    }
+
+    static var appOrange: UIColor {
+        Self.makeColor(light: UIColor(red: 1, green: 0.62, blue: 0.271, alpha: 1), dark: UIColor(red: 1, green: 0.62, blue: 0.271, alpha: 1))
+    }
+
 
     static var delButtomColor: UIColor {
         Self.makeColor(light: #colorLiteral(red: 1, green: 0.4451128062, blue: 0.3478579359, alpha: 1), dark: #colorLiteral(red: 0.5605350417, green: 0.2495013254, blue: 0.1949865626, alpha: 1) )
@@ -70,5 +98,20 @@ extension UIColor {
         }
     }
 
-
 }
+
+extension UIImage {
+    var cropRatio: CGFloat {
+        return CGFloat(size.width / size.height)
+    }
+
+    func height(width: CGFloat) -> CGFloat {
+        return width / self.cropRatio
+    }
+
+    func width(height: CGFloat) -> CGFloat {
+        return height * self.cropRatio
+    }
+}
+
+

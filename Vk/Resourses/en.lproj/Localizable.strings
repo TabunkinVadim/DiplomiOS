@@ -6,6 +6,38 @@
 
  */
 
+//MArK: SrartController
+
+"startRegistration" = "REGISTER";
+
+"startLogin" = "Already have an account";
+
+//MArK: InputViewController
+
+"inputLable" = "Welcome back";
+
+"explainInput" = "Enter your phone number \nto enter the application";
+
+"confirm" = "Confirm";
+
+//MArK: RegisterController
+
+"enterTheNumber" = "Enter the number";
+
+"explain" = "Your number will be used to log into your account";
+
+"next" = "NEXT";
+
+"aboutNextButtom" = "By clicking the \"Next\" button you accept the User Agreement and Privacy Policy";
+
+//MArK: VerificationController
+
+"verificationLable" = "Confirmation of registration";
+
+"explainLable" = "We sent an SMS with a code to the number";
+
+"enterCodeLable" = "Enter code from SMS";
+
 //MArK: General
 
 "Yes" = "Yes";
@@ -52,11 +84,23 @@
 
 //MArK: FeedModel
 
-"EnterWord" ="Enter word";
+"EnterWord" = "Enter word";
 
 //MArK: ProfileHeaderView
 
-"Exit" = "Exit";
+"detailed" = "Detailed information";
+
+"edit" = "edit";
+
+//MArK: ProfileHeaderActivityView
+
+"Empty" = "Empty";
+
+"History" = "History";
+
+"Photo" = "Photo";
+
+//"Exit" = "Exit";
 
 //MArK: ProfileHeaderView
 
@@ -98,9 +142,9 @@
 
 // MARK: FeedViewController
 
-"anyWord" = "Any word";
+"newsButtomFeed" = "News";
 
-"CheckWord" ="Check Word";
+"forYouButtom" = "For you";
 
 // MARK: PhotosViewController
 

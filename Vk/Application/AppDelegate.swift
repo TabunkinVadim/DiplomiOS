@@ -21,14 +21,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        let appConfiguration = AppConfiguration.randomElement()
 //        NetworkService.request(for: appConfiguration)
 //    }
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
-        migration()
+//        migration()
+
+//        let vc = FeedViewController()
+//        vc.view.backgroundColor = .backgroundColor
+//        let nc = UINavigationController()
+//        nc.navigationBar.isHidden = true
+//        nc.pushViewController(vc, animated: false)
+
+
+
+
         MainCoordinator.shared.start()
         notification.registeForLatestUpdatesIfPossible()
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = MainCoordinator.shared.navigationController
+        window?.rootViewController = MainCoordinator.shared.navigationController //nc
         window?.makeKeyAndVisible()
         let navBarAppearance = UINavigationBarAppearance()
         navBarAppearance.configureWithOpaqueBackground()
@@ -47,21 +56,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
-    func migration() {
-        let config = Realm.Configuration(
-            // Новая версия базы
-            schemaVersion: 2,
-            migrationBlock: { migration, oldSchemaVersion in
-                // Последняя версия базы
-                if (oldSchemaVersion < 1) {
-                    // Вносимые изменения
-                    migration.enumerateObjects(ofType: AuthorizationRealmModel.className()){ oldObject, newObject in
-                        newObject!["logIn"] = false
-                    }
-                }
-            })
-        Realm.Configuration.defaultConfiguration = config
-    }
+//    func migration() {
+//        let config = Realm.Configuration(
+//            // Новая версия базы
+//            schemaVersion: 2,
+//            migrationBlock: { migration, oldSchemaVersion in
+//                // Последняя версия базы
+//                if (oldSchemaVersion < 1) {
+//                    // Вносимые изменения
+//                    migration.enumerateObjects(ofType: AuthorizationRealmModel.className()){ oldObject, newObject in
+//                        newObject!["logIn"] = false
+//                    }
+//                }
+//            })
+//        Realm.Configuration.defaultConfiguration = config
+//    }
 
 }
 

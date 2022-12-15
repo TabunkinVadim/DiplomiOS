@@ -10,17 +10,17 @@ import StorageService
 import RealmSwift
 import SwiftUI
 
-class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+class ProfileViewController: UIViewController, ProfileViewControllerProtocol, LikedProtocol {
 
-    private var coreDataCoordinator = CoreDataCoordinator()
+
     weak var coordinator: ProfileCoordinator?
     private var index: Int = 0
     var header: ProfileHeaderView = ProfileHeaderView(reuseIdentifier: ProfileHeaderView.identifier)
 
-    var personalPosts: [Post]
+    //    var personalPosts: [Post]
 
 
-     lazy var tableView: UITableView = {
+    lazy var tableView: UITableView = {
         $0.toAutoLayout()
         $0.dataSource = self
         $0.delegate = self
@@ -38,8 +38,8 @@ class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     var user: User
 
     init (user: UserService, name: String, personalPosts: [Post]) {
-        self.user = user.setUser(fullName: name) ?? User(fullName: "", avatar: UIImage(), status: "")
-        self.personalPosts = personalPosts
+        self.user = user.setUser(fullName: name) ?? User(nickname: "", fullName: "", profession: "", avatar: UIImage(), status: "")
+        self.user.userPosts = personalPosts
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -50,9 +50,9 @@ class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
     func close() {
         let alert = UIAlertController(title: "Exit".localized, message: "YouAreSure".localized, preferredStyle: .alert)
         let ok = UIAlertAction(title: "Yes".localized, style: .destructive) { _ in
-            let realmCoordinator = RealmCoordinator()
-            guard let item = realmCoordinator.get() else {return}
-            realmCoordinator.edit(item: item, isLogIn: false)
+            //            let realmCoordinator = RealmCoordinator()
+            //            guard let item = realmCoordinator.get() else {return}
+            //            realmCoordinator.edit(item: item, isLogIn: false)
             self.dismiss(animated: true)
             self.coordinator?.logInVC()
         }
@@ -61,12 +61,50 @@ class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
         }
         alert.addAction(cancel)
         self.present(alert, animated: true, completion: nil)
+    }
 
+    func liked(description: String) {
+        let coreDataCoordinator = CoreDataCoordinator()
+        let index: Int? = {
+            for (index, post) in  user.userPosts.enumerated()  {
+                if post.description == description {
+                    return index
+                }
+            }
+            return nil
+        }()
+        guard let index = index else {
+            return
+        }
+
+        let indexFavoritPost = coreDataCoordinator.findPost(description: description)
+        if let indexFavoritPost = indexFavoritPost {
+            NotificationCenter.default.post(name: NSNotification.Name.turnDownLike, object: nil)
+            coreDataCoordinator.deletePosts(index: indexFavoritPost)
+        } else {
+            NotificationCenter.default.post(name: NSNotification.Name.likedNotification, object: nil)
+            coreDataCoordinator.sevePost(post: user.userPosts[index])
+        }
+        NotificationCenter.default.post(name: NSNotification.Name.reloadPosts, object: nil)
+    }
+
+
+    @objc func reloadPosts() {
+        tableView.reloadData()
+    }
+    @objc func turnDownLike() {
+        user.userPosts[index].likes -= 1
+    }
+    @objc func likedNotification() {
+        user.userPosts[index].likes += 1
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         header.delegateClose = self
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadPosts), name: Notification.Name.reloadPosts, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(likedNotification), name: Notification.Name.likedNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(turnDownLike), name: Notification.Name.turnDownLike, object: nil)
         layout()
     }
     
@@ -93,7 +131,7 @@ extension ProfileViewController : UITableViewDelegate, UITableViewDataSource {
         if section == 0 {
             numberRows = 1
         } else {
-            numberRows = personalPosts.count
+            numberRows = user.userPosts.count
         }
         return numberRows
     }
@@ -107,8 +145,14 @@ extension ProfileViewController : UITableViewDelegate, UITableViewDataSource {
         } else {
             var cell: PostTableViewCell
             cell = (tableView.dequeueReusableCell(withIdentifier: PostTableViewCell.identifier , for: indexPath) as! PostTableViewCell)
-            cell.setupCell(model: self.personalPosts[indexPath.row], set: indexPath.row)
+            cell.delegate = self
+            cell.setupCell(model: self.user.userPosts[indexPath.row], set: indexPath.row)
             cell.index = indexPath.row
+            cell.updateImageViewConstraint(view.bounds.size)
+            //            var cell: PostTableViewCell
+            //            cell = (tableView.dequeueReusableCell(withIdentifier: PostTableViewCell.identifier , for: indexPath) as! PostTableViewCell)
+            //            cell.setupCell(model: self.personalPosts[indexPath.row], set: indexPath.row)
+            //            cell.index = indexPath.row
             let tap = UITapGestureRecognizer(target: self, action: #selector(doubleTapped))
             tap.numberOfTapsRequired = 2
             cell.addGestureRecognizer(tap)
@@ -122,16 +166,17 @@ extension ProfileViewController : UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if section == 0 {
-            header.avatar.image = user.avatar
-            header.name.text = user.fullName
-            header.status.text = user.status
+            header.setProfileHeader(nickName: user.nickname, name: user.fullName, avatar: user.avatar, profession: user.profession)
+            //            header.avatar.image = user.avatar
+            //            header.name.text = user.fullName
+            //            header.status.text = user.status
         }
         return header
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if section == 0 {
-            return 200
+            return 360
         } else {
             return 0
         }
@@ -154,12 +199,23 @@ extension ProfileViewController : UITableViewDelegate, UITableViewDataSource {
     }
 
     @objc private func doubleTapped() {
+        let coreDataCoordinator = CoreDataCoordinator()
 
-        coreDataCoordinator.sevePost(post: personalPosts[index])
-        NotificationCenter.default.post(name: NSNotification.Name.reloadFavoritPost, object: nil)
+        let indexFavoritPost = coreDataCoordinator.findPost(description: user.userPosts[index].description)
+        if let indexFavoritPost = indexFavoritPost {
+            NotificationCenter.default.post(name: NSNotification.Name.turnDownLike, object: nil)
+            coreDataCoordinator.deletePosts(index: indexFavoritPost)
+        } else {
+            NotificationCenter.default.post(name: NSNotification.Name.likedNotification, object: nil)
+            coreDataCoordinator.sevePost(post: user.userPosts[index])
+        }
+        NotificationCenter.default.post(name: NSNotification.Name.reloadPosts, object: nil)
     }
 }
 
 public extension NSNotification.Name {
-    static let reloadFavoritPost = NSNotification.Name("reloadFavoritPost")
+    static let reloadPosts = NSNotification.Name("reloadPosts")
+    static let turnDownLike = NSNotification.Name("turnDownLike")
+    static let likedNotification = NSNotification.Name("likedNotification")
+
 }

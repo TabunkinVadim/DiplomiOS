@@ -10,15 +10,16 @@ import UIKit
 class MainTabBarController: UITabBarController {
 
     weak var coordinator: MainCoordinator?
-    var profileCoordinator: ProfileCoordinator
     var feedCoordinator: FeedCoordinator
+    var profileCoordinator: ProfileCoordinator
     var favoritePostCoordinator: FavoritePostsCoordinator
     var mapCoordinator: MapCoordinator
 
 
-    init (loginCheker: LoginInspector,checkModel: CheckModel ){
-        profileCoordinator = MainCoordinator.shared.profile(navigationController: UINavigationController(), loginCheker: loginCheker)
+
+    init (loginCheker: LoginInspector,checkModel: CheckModel){
         feedCoordinator = MainCoordinator.shared.feed(navigationController: UINavigationController(), checkModel: checkModel)
+        profileCoordinator = MainCoordinator.shared.profile(navigationController: UINavigationController(), loginCheker: loginCheker)
         favoritePostCoordinator = MainCoordinator.shared.favorite(navigationController: UINavigationController())
         mapCoordinator = MainCoordinator.shared.map(navigationController: UINavigationController())
         super.init(nibName: nil, bundle: nil)

@@ -23,6 +23,10 @@ protocol ProfileViewControllerProtocol: AnyObject {
     func close ()
 }
 
+protocol LikedProtocol: AnyObject {
+    func liked (description: String)
+}
+
 protocol LogInViewControllerProtocol: AnyObject {
     func showAlert (title: String, massege: String, action:@escaping (UIAlertAction)-> Void)
 }

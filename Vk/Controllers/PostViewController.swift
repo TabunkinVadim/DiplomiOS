@@ -12,7 +12,7 @@ class PostViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .lightGray
-        title = newPost.title
+//        title = newPost.title
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Info".localized, style: .plain, target: self, action: #selector(infoButtom(_:)))
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Feed".localized, style: .plain, target: self, action: #selector(pop(_:)))
     }
