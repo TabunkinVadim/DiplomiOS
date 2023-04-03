@@ -7,7 +7,7 @@
 
 import UIKit
 import SwiftUI
-import iOSIntPackage
+
 
 extension UIView {
     static var identifier:String {String(describing: self)}
@@ -28,6 +28,10 @@ extension String {
 }
 
 extension Int {
+    var localizedCommentsCount: String {
+        String (self) + " " + String.localizedStringWithFormat(NSLocalizedString("NumberOfComment", comment: ""), self )
+    }
+
     var localizedLikesCount: String {
         String.localizedStringWithFormat(NSLocalizedString("NumberOfLike", comment: ""), self )
     }
@@ -43,7 +47,6 @@ extension Int {
     var localizedScribesCount: String {
         String (self) + "\n" + String.localizedStringWithFormat(NSLocalizedString("NumberOfScribe", comment: ""), self )
     }
-
 }
 
 extension UIColor {
@@ -67,6 +70,9 @@ extension UIColor {
         Self.makeColor(light: UIColor(red: 1, green: 0.62, blue: 0.271, alpha: 1), dark: UIColor(red: 1, green: 0.62, blue: 0.271, alpha: 1))
     }
 
+    static var appGrey: UIColor {
+        Self.makeColor(light: UIColor(red: 0.495, green: 0.507, blue: 0.512, alpha: 1), dark: .white)
+    }
 
     static var delButtomColor: UIColor {
         Self.makeColor(light: #colorLiteral(red: 1, green: 0.4451128062, blue: 0.3478579359, alpha: 1), dark: #colorLiteral(red: 0.5605350417, green: 0.2495013254, blue: 0.1949865626, alpha: 1) )
@@ -78,6 +84,10 @@ extension UIColor {
 
     static var borderColor: UIColor {
         Self.makeColor(light: .black, dark: .white )
+    }
+
+    static var buttomColor: UIColor {
+        Self.makeColor(light: UIColor(red: 0.17, green: 0.223, blue: 0.25, alpha: 1), dark: .systemGray4 )
     }
 
     private static func makeColor(light: UIColor, dark: UIColor) -> UIColor {
@@ -97,7 +107,6 @@ extension UIColor {
             return light
         }
     }
-
 }
 
 extension UIImage {
@@ -114,4 +123,17 @@ extension UIImage {
     }
 }
 
+extension UIViewController {
 
+    func createCustomButton(imageName: String, selector: Selector) -> UIBarButtonItem {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(named: imageName)?.withRenderingMode(.automatic),for: .normal)
+        button.tintColor = .black
+        button.imageView?.contentMode = .scaleAspectFit
+        button.contentVerticalAlignment = .fill
+        button.contentHorizontalAlignment = .fill
+        button.addTarget(self, action: selector, for: .touchUpInside)
+        let menuBarItem = UIBarButtonItem(customView: button)
+        return menuBarItem
+    }
+}

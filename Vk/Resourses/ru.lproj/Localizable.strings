@@ -24,6 +24,8 @@
 
 "enterTheNumber" = "Введите номер";
 
+"countries" = "Страны";
+
 "explain" = "Ваш номер будет использоваться для входа в аккаунт";
 
 "next" = "ДАЛЕЕ";
@@ -32,11 +34,13 @@
 
 //MArK: VerificationController
 
-"verificationLable" = "Подтверждение регистрации";
+"verificationLable" = "Подтверждение номера";
 
 "explainLable" = "Мы отправили SMS с кодом на номер";
 
 "enterCodeLable" = "Введите код из SMS";
+
+"verification" = "Подтверждение";
 
 //MArK: General
 
@@ -104,6 +108,8 @@
 
 //MArK: ProfileHeaderView
 
+"message" = "Сообщение";
+
 "ShowStatus" = "Опубликовать статус";
 
 "NoStatus" =  "Статус отсутствует";
@@ -136,6 +142,28 @@
 
 "CreateAnAccount" = "Создать аккаунт";
 
+// MARK: EditProfileViewController
+
+"basicInformation" = "Основная информация";
+
+"editName" = "Имя";
+
+"editSurname" = "Фамилия";
+
+"profession" = "Профессия";
+
+"gender" = "Пол";
+
+"Male" = "Мужской";
+
+"Female" = "Женский";
+
+"dataOfBrith" = "Дата рождения";
+
+"city" = "Родной город";
+
+"cityName" = "Название города";
+
 // MARK: ProfileViewController
 
 "YouAreSure" = "Вы уверенны?";
@@ -150,9 +178,19 @@
 
 "PhotoGallery" = "Фото галерея";
 
+// MARK: NewPostViewController
+
+"newPost" = "Новая запись";
+
+"description" = "Описание";
+
 // MARK: PostViewController
 
-"Info" = "Инфо";
+"Publication" = "Публикация";
+
+"newComment" = "Добавить коментарий";
+
+//"Info" = "Инфо";
 
 // MARK: InfoViewController
 

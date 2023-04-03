@@ -24,6 +24,8 @@
 
 "enterTheNumber" = "Enter the number";
 
+"countries" = "Countries";
+
 "explain" = "Your number will be used to log into your account";
 
 "next" = "NEXT";
@@ -32,11 +34,13 @@
 
 //MArK: VerificationController
 
-"verificationLable" = "Confirmation of registration";
+"verificationLable" = "Confirmation number";
 
 "explainLable" = "We sent an SMS with a code to the number";
 
 "enterCodeLable" = "Enter code from SMS";
+
+"verification" = "Verification";
 
 //MArK: General
 
@@ -104,6 +108,8 @@
 
 //MArK: ProfileHeaderView
 
+"message" = "Message";
+
 "ShowStatus" = "Show status";
 
 "NoStatus" = "No status";
@@ -136,6 +142,28 @@
 
 "CreateAnAccount" = "Create an account";
 
+// MARK: EditProfileViewController
+
+"basicInformation" = "Basic information";
+
+"editName" = "Name";
+
+"editSurname" = "Surname";
+
+"profession" = "Profession";
+
+"gender" = "Gender";
+
+"Male" = "Male";
+
+"Female" = "Female";
+
+"dataOfBrith" = "Data of Brith";
+
+"city" = "Hometown";
+
+"cityName" = "City name";
+
 // MARK: ProfileViewController
 
 "YouAreSure" = "You are sure";
@@ -150,9 +178,19 @@
 
 "PhotoGallery" = "Photo Gallery";
 
+// MARK: NewPostViewController
+
+"newPost" = "New post";
+
+"description" = "Description";
+
 // MARK: PostViewController
 
-"Info" = "Info";
+"Publication" = "Publication";
+
+"newComment" = "New comment";
+
+//"Info" = "Info";
 
 // MARK: InfoViewController
 

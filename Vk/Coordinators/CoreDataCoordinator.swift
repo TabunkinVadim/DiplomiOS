@@ -5,11 +5,9 @@
 //  Created by Табункин Вадим on 28.08.2022.
 //
 
-import Foundation
 import CoreData
-import StorageService
 import UIKit
-import SwiftUI
+
 
 final class CoreDataCoordinator {
 
@@ -25,25 +23,16 @@ final class CoreDataCoordinator {
 
     lazy var viewContext: NSManagedObjectContext = persistentContainer.viewContext
 
-//    func seveContext() {
-//        let context = persistentContainer.viewContext
-//        if context.hasChanges {
-//            do{
-//                try context.save()
-//            } catch {
-//                let nserror = error as NSError
-//                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-//            }
-//        }
-//    }
-
     func sevePost (post: Post) {
         let favoritePost = FavoritePostModel(context: viewContext)
+        favoritePost.userID = post.userID
+        favoritePost.postIndex = Int16(post.postIndex)
+        favoritePost.autorAvatar = post.avatar.jpegData(compressionQuality: 0.1)
         favoritePost.autor = post.author
         favoritePost.descriptionPost = post.description
         favoritePost.image = post.image.jpegData(compressionQuality: 1)
         favoritePost.likes = Int16(post.likes)
-        favoritePost.postViews = Int16(post.views)
+        favoritePost.postViews = Int16(post.comments)
         do {
             try viewContext.save()
         } catch let error {
@@ -81,24 +70,17 @@ final class CoreDataCoordinator {
         }
     }
 
-    func findPost(description: String) -> Int? {
+    func findPost(userID: String, postIndex: Int) -> Int? {
         let count = getPostCount()
         for index in  0 ..< count  {
             let post = getPost(postIndex: index)
-            if post?.descriptionPost == description {
-                //                deletePosts(index: index)
+            if post?.userID == userID && post!.postIndex == postIndex {
                 return index
             }
         }
         return nil
     }
 
-
-
-
-
-
-    
     public func clearAllCoreData() {
         let entities = self.persistentContainer.managedObjectModel.entities
         entities.compactMap({ $0.name }).forEach(clearDeepObjectEntity)

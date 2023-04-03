@@ -8,23 +8,20 @@
 import Foundation
 import UIKit
 
-protocol UserService {
-    func setUser(fullName:String) -> User?
-}
-protocol LoginViewControllerDelegate: AnyObject {
-    func chek(login: String, pswd: String, completion: @escaping (AuthResult) -> Void)
-    func signUp(login: String, pswd: String, completion: @escaping (AuthResult) -> Void)
-    }
-protocol LoginFactory{
-    func getLoginChek() -> LoginInspector
-}
-
 protocol ProfileViewControllerProtocol: AnyObject {
-    func close ()
+    func editProfile ()
+    func infoProfile ()
 }
 
-protocol LikedProtocol: AnyObject {
-    func liked (description: String)
+protocol ProfileHeaderActivityProtocol: AnyObject {
+    func newEntry ()
+    func newHistory()
+    func newPhoto ()
+}
+
+protocol PostProtocol: AnyObject {
+    func openProfile (userID: String)
+    func liked (userID: String, postIndex: Int)
 }
 
 protocol LogInViewControllerProtocol: AnyObject {

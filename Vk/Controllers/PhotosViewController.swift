@@ -6,12 +6,14 @@
 //
 
 import UIKit
-import iOSIntPackage
+
 
 class PhotosViewController: UIViewController {
 
     weak var coordinator: ProfileCoordinator?
-
+    weak var feedCoordinator: FeedCoordinator?
+    private var isFriend: Bool
+    private var user: User
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collection = UICollectionView(frame:.zero, collectionViewLayout: layout)
@@ -23,32 +25,54 @@ class PhotosViewController: UIViewController {
         return collection
     }()
 
-    var imageThreads: [UIImage] = []
+    private var userPhotos: [UIImage] = []
+
+    init (user: User, isFriend: Bool) {
+        self.user = user
+        self.isFriend = isFriend
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: Load content
+    private func loadPhoto () {
+        let firestoreCoordinator = FirestoreCoordinator()
+        firestoreCoordinator.getImages(user: self.user) { images, error in
+            self.userPhotos = images
+            self.collectionView.reloadData()
+        }
+    }
 
     override func viewDidLoad() {
         self.navigationController?.navigationBar.isHidden = false
-        title = "PhotoGallery".localized
         view.backgroundColor = .backgroundColor
-        super.viewDidLoad()
-        threadImages()
-        layout()
-    }
-    
-    func threadImages() {
-        let startTime = Date()
-        ImageProcessor().processImagesOnThread(sourceImages: photoGallery2, filter: .chrome, qos: .utility) { imageThread in
-            var images: [UIImage] = []
-            for image in imageThread {
-                guard  let image = image else { return }
-                images.append(UIImage(cgImage: image))
-            }
-            self.imageThreads = images
-            DispatchQueue.main.async{
-                self.collectionView.reloadData()
-                let time = Date().timeIntervalSince(startTime)
-                print(time)
-            }
+        title = "PhotoGallery".localized
+
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: UIElementFactory().addIconButtom(icon: UIImage(systemName: "plus") ?? UIImage(),
+                                                                                                         color: .appOrange,
+                                                                                                         cornerRadius: 0) {
+            let photoPicer: UIImagePickerController = {
+                $0.delegate = self
+                return $0
+            }(UIImagePickerController())
+            self.present(photoPicer, animated: true, completion: nil)
+            
+        })
+        if isFriend {
+            navigationItem.rightBarButtonItem?.customView?.isHidden = true
         }
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIElementFactory().addIconButtom(icon: UIImage(systemName: "arrow.left") ?? UIImage(),
+                                                                                                             color: .appOrange,
+                                                                                                             cornerRadius: 0) {
+            self.coordinator?.pop()
+            self.feedCoordinator?.pop()
+        })
+        super.viewDidLoad()
+        loadPhoto()
+        layout()
     }
 
     func layout() {
@@ -68,12 +92,12 @@ extension PhotosViewController : UICollectionViewDataSource, UICollectionViewDel
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        imageThreads.count
+        self.userPhotos.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProfilePhotoCollectionViewCell.identifier, for: indexPath) as! ProfilePhotoCollectionViewCell
-        cell.imageView.image = imageThreads[indexPath.item]
+        cell.imageView.image = userPhotos[indexPath.item]
         return cell
     }
 
@@ -89,5 +113,17 @@ extension PhotosViewController : UICollectionViewDataSource, UICollectionViewDel
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         UIEdgeInsets(top: PhotosViewController.indent, left: PhotosViewController.indent, bottom: PhotosViewController.indent, right: PhotosViewController.indent)
     }
+}
 
+extension PhotosViewController : UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            self.user.numberOfPhoto += 1
+            self.user.userPhotos.append(image)
+            let firestoreCoordinator = FirestoreCoordinator()
+            firestoreCoordinator.writeUser(userID: self.user.userID, user: self.user)
+            loadPhoto()
+        }
+        dismiss(animated: true, completion: nil)
+    }
 }

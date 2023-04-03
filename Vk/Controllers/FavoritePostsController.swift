@@ -7,38 +7,51 @@
 
 import Foundation
 import UIKit
-import StorageService
 
-class FavoritePostsController: UIViewController, LikedProtocol {
+class FavoritePostsController: UIViewController, PostProtocol {
 
     private var index: Int = 0
     private lazy var tableView: UITableView = {
         $0.toAutoLayout()
         $0.dataSource = self
         $0.delegate = self
+        $0.backgroundColor = .backgroundColor
         $0.register(PostTableViewCell.self, forCellReuseIdentifier: PostTableViewCell.identifier)
         return $0
     }(UITableView(frame: .zero, style: .grouped))
+
+    // MARK: Delegate PostProtocol
+    func openProfile(userID: String) {
+
+    }
+
+    func liked(userID: String, postIndex: Int) {
+        let coreDataCoordinator = CoreDataCoordinator()
+        let index = coreDataCoordinator.findPost(userID: userID, postIndex: postIndex)
+        guard let index = index else {
+            return
+        }
+        coreDataCoordinator.deletePosts(index: index)
+
+        let firestoreCoordinator = FirestoreCoordinator()
+        firestoreCoordinator.getPost(userID: userID, postIndex: postIndex) { post, error in
+            guard var post = post else {return}
+            post.likes -= 1
+            firestoreCoordinator.writePost(post: post)
+            NotificationCenter.default.post(name: NSNotification.Name.turnDownLike, object: nil, userInfo:["userID": userID, "postIndex": postIndex])
+            NotificationCenter.default.post(name: NSNotification.Name.reloadPosts, object: nil)
+        }
+    }
+
+    // MARK: Notification likes
+    @objc func reloadPosts() {
+        tableView.reloadData()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(reloadPosts), name: Notification.Name.reloadPosts, object: nil)
         layout()
-    }
-
-    func liked(description: String) {
-        let coreDataCoordinator = CoreDataCoordinator()
-        let index = coreDataCoordinator.findPost(description: description)
-        guard let index = index else {
-            return
-        }
-        coreDataCoordinator.deletePosts(index: index)
-        NotificationCenter.default.post(name: NSNotification.Name.turnDownLike, object: nil)
-        NotificationCenter.default.post(name: NSNotification.Name.reloadPosts, object: nil)
-    }
-
-    @objc func reloadPosts() {
-        tableView.reloadData()
     }
 
     private func layout() {
@@ -66,26 +79,18 @@ extension FavoritePostsController : UITableViewDataSource {
         let favoritPost = coreDataCoordinator.getPost(postIndex: indexPath.row)
         guard  let favoritPost = favoritPost else {return UITableViewCell()}
         cell.delegate = self
-        cell.setupCell(model: Post(author: favoritPost.autor!,
+        cell.setupCell(model: Post(userID: favoritPost.userID ?? "0",
+                                   postIndex: Int(favoritPost.postIndex),
+                                   avatar: UIImage(data: favoritPost.autorAvatar!)!,
+                                   author: favoritPost.autor!,
                                    image: UIImage(data: favoritPost.image!)!,
                                    description: favoritPost.descriptionPost!,
                                    likes: Int(favoritPost.likes),
                                    views: Int(favoritPost.postViews)),
-                       set: 1)
-
+                       autor: favoritPost.autor!,
+                       avatar: UIImage(data: favoritPost.autorAvatar!)!)
         cell.updateImageViewConstraint(view.bounds.size)
-        let tap = UITapGestureRecognizer(target: self, action: #selector(doubleTapped))
-        tap.numberOfTapsRequired = 2
-        cell.addGestureRecognizer(tap)
         return cell
-    }
-    @objc private func doubleTapped (){
-        let coreDataCoordinator = CoreDataCoordinator()
-        //        coreDataCoordinator.clearAllCoreData()
-        coreDataCoordinator.deletePosts(index: index)
-
-        NotificationCenter.default.post(name: NSNotification.Name.turnDownLike, object: nil)
-        NotificationCenter.default.post(name: NSNotification.Name.reloadPosts, object: nil)
     }
 }
 

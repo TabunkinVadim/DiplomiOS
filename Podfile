@@ -24,6 +24,7 @@ target 'Vk' do
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'FlagPhoneNumber'
+  pod 'FirebaseFirestore'
 
 end
 

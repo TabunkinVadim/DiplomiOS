@@ -5,14 +5,13 @@
 //  Created by Табункин Вадим on 25.09.2022.
 //
 
-import Foundation
 import UIKit
+
 
 public final class MapCoordinator: Coordinator{
 
     var childCoordinators = [Coordinator]()
     var navigationController: UINavigationController
-
 
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController

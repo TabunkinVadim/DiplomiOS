@@ -5,14 +5,13 @@
 //  Created by Табункин Вадим on 23.06.2022.
 //
 
-import Foundation
 import UIKit
 import Firebase
 
 
-final class MainCoordinator: Coordinator {
+final class MainCoordinator {
+
     static let shared = MainCoordinator(navigationController: UINavigationController())
-    
     var childCoordinators =  [Coordinator]()
     var navigationController: UINavigationController
     
@@ -20,10 +19,25 @@ final class MainCoordinator: Coordinator {
         self.navigationController = navigationController
     }
 
-    func start() {
-        if Firebase.Auth.auth().currentUser != nil {
-            tapBarVC()
-//            startVC()
+    func start(){
+        Auth.auth().addStateDidChangeListener() { auth, user in
+            if user != nil {
+            } else {
+                self.errorAlert(title: "Error".localized, buttomTitle: "Ok".localized, error: NSError(domain: "Кто-то вышел из вашего аккаунта", code: 180)) { _ in
+                    self.navigationController.popViewController(animated: true)
+                }
+            }
+        }
+
+        if let userAuth = Auth.auth().currentUser{
+            let firestoreCoordinator = FirestoreCoordinator()
+            firestoreCoordinator.getUser(userID: userAuth.uid) { user, error in
+                guard let user = user else {
+                    self.startVC()
+                    return
+                }
+                self.tapBarVC(user: user)
+            }
         } else {
             startVC()
         }
@@ -33,7 +47,6 @@ final class MainCoordinator: Coordinator {
         let vc = StartViewController()
         vc.coordinator = self
         vc.view.backgroundColor = .backgroundColor
-        //        vc.tabBarItem = UITabBarItem(title: "Profile".localized, image: UIImage(systemName: "person")?.withAlignmentRectInsets(.init(top: 0, left: 0, bottom: 0, right: 0)), tag: 0 )
         navigationController.navigationBar.isHidden = true
         navigationController.pushViewController(vc, animated: false)
     }
@@ -54,38 +67,33 @@ final class MainCoordinator: Coordinator {
         navigationController.pushViewController(vc, animated: false)
     }
 
-    func verificationVC(userNumber: String, verificationID: String?) {
-        let vc = VerificationViewController(userNumber: userNumber, verificationID: verificationID)
+    func verificationVC(userNumber: String, verificationID: String?, isRegistration: Bool) {
+        let vc = VerificationViewController(userNumber: userNumber, verificationID: verificationID, isRegistration: isRegistration)
         vc.coordinator = self
         vc.view.backgroundColor = .backgroundColor
         navigationController.navigationBar.isHidden = true
         navigationController.pushViewController(vc, animated: false)
     }
 
-    func tapBarVC() {
-        //        let vc = StartViewController()
-        //        vc.coordinator = self
-        //        navigationController.navigationBar.isHidden = true
-        //        navigationController.pushViewController(vc, animated: false)
-        let loginFactory = MyLoginFactory()
-        let checkModel = CheckModel()
-        let vc = MainTabBarController(loginCheker: loginFactory.getLoginChek(), checkModel: checkModel)
+    func tapBarVC(user: User) {
+        let vc = MainTabBarController(user: user)
         vc.coordinator = self
+        vc.tabBar.tintColor = .appOrange
         vc.view.backgroundColor = .backgroundColor
         navigationController.navigationBar.isHidden = true
         navigationController.pushViewController(vc, animated: false)
     }
 
-    func profile(navigationController: UINavigationController, loginCheker: LoginInspector)-> ProfileCoordinator {
-        let child = ProfileCoordinator(navigationController: navigationController, loginCheker: loginCheker)
+    func profile(navigationController: UINavigationController, user: User)-> ProfileCoordinator {
+        let child = ProfileCoordinator(navigationController: navigationController, user: user)
         childCoordinators.append(child)
         child.parentCoordinator = self
         child.start()
         return child
     }
     
-    func feed(navigationController: UINavigationController, checkModel: CheckModel) -> FeedCoordinator{
-        let child = FeedCoordinator(navigationController: navigationController, checkModel: checkModel)
+    func feed(navigationController: UINavigationController, user: User) -> FeedCoordinator{
+        let child = FeedCoordinator(navigationController: navigationController, user: user)
         childCoordinators.append(child)
         child.start()
         return child
@@ -112,16 +120,15 @@ final class MainCoordinator: Coordinator {
         }
     }
 
-    func errorAlert (title: String, error: Error?, cancelAction:((UIAlertAction) -> Void)?) {
-            let alert: UIAlertController = {
-                $0.title = title
-                if let error = error {
-                    $0.message = error.localizedDescription
-                } else { $0.message = "UnknownError".localized }
-                return $0
-            }(UIAlertController())
-        alert.addAction(UIAlertAction(title: "Cancel".localized, style: .cancel, handler: cancelAction))
-            navigationController.present(alert, animated: true)
-        }
-
+    func errorAlert (title: String, buttomTitle: String, error: Error?, cancelAction:((UIAlertAction) -> Void)?) {
+        let alert: UIAlertController = {
+            $0.title = title
+            if let error = error {
+                $0.message = error.localizedDescription
+            } else { $0.message = "UnknownError".localized }
+            return $0
+        }(UIAlertController())
+        alert.addAction(UIAlertAction(title: buttomTitle, style: .cancel, handler: cancelAction))
+        navigationController.present(alert, animated: true)
+    }
 }

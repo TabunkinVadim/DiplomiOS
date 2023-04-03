@@ -6,7 +6,6 @@
 //
 //
 
-import Foundation
 import CoreData
 
 
@@ -16,14 +15,16 @@ extension FavoritePostModel {
         return NSFetchRequest<FavoritePostModel>(entityName: "FavoritePostModel")
     }
 
+    @NSManaged public var userID: String?
+    @NSManaged public var postIndex: Int16
+    @NSManaged public var autorAvatar: Data?
     @NSManaged public var autor: String?
     @NSManaged public var image: Data?
     @NSManaged public var descriptionPost: String?
     @NSManaged public var likes: Int16
     @NSManaged public var postViews: Int16
-
 }
 
 extension FavoritePostModel : Identifiable {
-
+    
 }

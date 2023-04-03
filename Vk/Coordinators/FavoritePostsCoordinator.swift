@@ -5,11 +5,12 @@
 //  Created by Табункин Вадим on 28.08.2022.
 //
 
-import Foundation
 import UIKit
+
 
 public final class FavoritePostsCoordinator: Coordinator{
 
+    weak var parentCoordinator: MainCoordinator?
     var childCoordinators = [Coordinator]()
     var navigationController: UINavigationController
 

@@ -7,22 +7,26 @@
 
 import UIKit
 
+
 class StartViewController: UIViewController {
 
     weak var coordinator: MainCoordinator?
     
     private let startAppImage = UIElementFactory().addImage(imageNamed: "appImage",
-                                                            cornerRadius: 0, clipsToBounds: false,
+                                                            cornerRadius: 0,
+                                                            borderWidth: 0,
+                                                            borderColor: nil,
+                                                            clipsToBounds: false,
                                                             contentMode: .scaleToFill,
                                                             tintColor: .none,
                                                             backgroundColor: .none)
 
     private lazy var startRegistrationButtom = UIElementFactory().addBigButtom(lable: "startRegistration".localized,
-                                                                               backgroundColor: UISets().ButtomColor) {
+                                                                               backgroundColor: .buttomColor) {
         self.coordinator?.registerVC()
     }
 
-    private lazy var startLoginButtom = UIElementFactory().addTextButtom(lable: "startLogin".localized,
+    private lazy var startLoginButtom = UIElementFactory().addTextButtom(lable: "startLogin".localized, size: 14,
                                                                          titleColor: .textColor, contentHorizontalAlignment: .center) {
         self.coordinator?.inputVC()
     }
@@ -56,9 +60,5 @@ class StartViewController: UIViewController {
             startLoginButtom.widthAnchor.constraint(equalToConstant: 118),
             startLoginButtom.heightAnchor.constraint(equalToConstant: 20)
         ])
-
     }
-    
 }
-
-

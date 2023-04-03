@@ -9,10 +9,11 @@ import UIKit
 import Firebase
 import FlagPhoneNumber
 
+
 class RegisterViewController: UIViewController {
 
     weak var coordinator: MainCoordinator?
-
+    private var phoneNumber: String?
     private let scrollView: UIScrollView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
@@ -35,23 +36,21 @@ class RegisterViewController: UIViewController {
                                                                      lineHeightMultiple: 1.03,
                                                                      textAlignment: .center)
 
-    private let numberTextField = UIElementFactory().addTextField(placeholdertext: "+79__-___-__-__")
+    private lazy var numberTextField = UIElementFactory().addNumberTextField(delegate: self)
 
-    private lazy var nextButtom = UIElementFactory().addBigButtom(lable: "next".localized, backgroundColor: UISets().ButtomColor) {
+    private lazy var numberListController = UIElementFactory().addListController(countryRepository: self.numberTextField.countryRepository, title: "countries".localized)
 
-        guard let phoneNumber = self.numberTextField.text else {return}
-        if phoneNumber.count == 16 {
-            PhoneAuthProvider.provider().verifyPhoneNumber(phoneNumber, uiDelegate: nil) { (verificationID, error) in
-                if error != nil {
-                    print(error?.localizedDescription ?? "Error")
-                } else {
-                    self.coordinator?.verificationVC(userNumber: self.numberTextField.text!, verificationID: verificationID)
-                }
+    private lazy var nextButtom = UIElementFactory().addBigButtom(lable: "next".localized,
+                                                                  backgroundColor: .buttomColor) {
+
+        guard let phoneNumber = self.phoneNumber else {return}
+        PhoneAuthProvider.provider().verifyPhoneNumber(phoneNumber, uiDelegate: nil) { (verificationID, error) in
+            if error != nil {
+                print(error?.localizedDescription ?? "Error")
+            } else {
+                UserDefaults.standard.set(verificationID, forKey: "authVerificationID")
+                self.coordinator?.verificationVC(userNumber: self.numberTextField.text!, verificationID: verificationID, isRegistration: true)
             }
-        } else {
-            self.coordinator?.errorAlert(title: "Error".localized, error: NSError(domain: "Не верный номер телефона", code: 999999), cancelAction: { _ in
-                self.numberTextField.text = ""
-            })
         }
     }
 
@@ -64,7 +63,16 @@ class RegisterViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         numberTextField.delegate = self
+        setController()
         layout()
+    }
+
+    private func setController() {
+        self.numberListController.didSelect = { country in
+            self.numberTextField.setFlag(countryCode: country.code)
+        }
+        nextButtom.alpha = 0.5
+        nextButtom.isEnabled = false
     }
 
     private func layout() {
@@ -153,54 +161,29 @@ class RegisterViewController: UIViewController {
     }
 }
 
-extension RegisterViewController: UITextFieldDelegate{
+extension RegisterViewController: FPNTextFieldDelegate {
+    func fpnDidSelectCountry(name: String, dialCode: String, code: String) {
+    }
+
+    func fpnDidValidatePhoneNumber(textField: FPNTextField, isValid: Bool) {
+        if isValid {
+            nextButtom.alpha = 1
+            nextButtom.isEnabled = true
+            phoneNumber = numberTextField.getFormattedPhoneNumber(format: .International)
+        } else {
+            nextButtom.alpha = 0.5
+            nextButtom.isEnabled = false
+        }
+    }
+
+    func fpnDisplayCountryList() {
+        let nc = UINavigationController(rootViewController: numberListController)
+        numberTextField.text = ""
+        self.present(nc, animated: true)
+    }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
         return true
     }
-
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if (textField == numberTextField) {            let newString = (textField.text! as NSString).replacingCharacters(in: range, with: string)
-            let components = newString.components(separatedBy: NSCharacterSet.decimalDigits.inverted)
-
-            let decimalString = components.joined(separator: "") as NSString
-            let length = decimalString.length
-            let hasLeadingOne = length > 0 && decimalString.hasPrefix("7") || length > 0 && decimalString.hasPrefix("8")
-
-            if length == 0 || (length > 10 && !hasLeadingOne) || length > 11 {
-                let newLength = (textField.text! as NSString).length + (string as NSString).length - range.length as Int
-
-                return (newLength > 10) ? false : true
-            }
-            var index = 0 as Int
-            let formattedString = NSMutableString()
-
-            if hasLeadingOne {
-                formattedString.append("+7 ")
-                index += 1
-            }
-
-            if (length - index) > 3 {
-                let areaCode = decimalString.substring(with: NSMakeRange(index, 3))
-                formattedString.appendFormat("(%@)", areaCode)
-                index += 3
-            }
-
-            if length - index > 3 {
-                let prefix = decimalString.substring(with: NSMakeRange(index, 3))
-                formattedString.appendFormat("%@-", prefix)
-                index += 3
-            }
-
-            let remainder = decimalString.substring(from: index)
-            formattedString.append(remainder)
-            textField.text = formattedString as String
-            return false
-        }
-        else {
-            return true
-        }
-    }
-
 }

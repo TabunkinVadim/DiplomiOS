@@ -1,161 +1,213 @@
 //
 //  InfoViewController.swift
-//  Navigation
+//  Vk
 //
-//  Created by Табункин Вадим on 03.03.2022.
+//  Created by Табункин Вадим on 01.04.2023.
 //
 
 import UIKit
 
-class InfoViewController: UIViewController {
-//    weak var coordinator: FeedCoordinator?
-//    let url1 = "https://jsonplaceholder.typicode.com/todos/"
-//    let url2 = "https://swapi.dev/api/planets/1"
-//    let screenWidth = UIScreen.main.bounds.width
-//    let screenHeight = UIScreen.main.bounds.height
-//    var residents: [Resident] = []
-//    let lableURL1 :UILabel = {
-//        $0.toAutoLayout()
-//        $0.font = UIFont.boldSystemFont(ofSize: 20)
-//        $0.textColor = .textColor
-//        $0.numberOfLines = 2
-//        return $0
-//    } (UILabel())
-//
-//    let lableURL2 :UILabel = {
-//        $0.toAutoLayout()
-//        $0.font = UIFont.boldSystemFont(ofSize: 20)
-//        $0.textColor = .textColor
-//        $0.numberOfLines = 2
-//        return $0
-//    } (UILabel())
-//
-//    private lazy var tableView: UITableView = {
-//        $0.toAutoLayout()
-//        $0.dataSource = self
-//        $0.delegate = self
-//        $0.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0)
-//        return $0
-//    }(UITableView(frame: .zero, style: .plain))
-//
-//    private lazy var alertButton = CustomButton(title: "Alert".localized, color: UIColor(red: 0, green: 0, blue: 0, alpha: 0), colorTitle: UIColor(named: "MainColor") ?? .blue , borderWith: 0, cornerRadius: 10) {
-//        let pressAlertButtom = UIAlertController(title: "Alert".localized, message: "Attention".localized, preferredStyle: .alert)
-//        let cancelAction = UIAlertAction(title: "Cancel".localized, style: .cancel, handler: {_ in print("Cancel".localized)})
-//        pressAlertButtom.addAction(cancelAction)
-//        let deleteAction = UIAlertAction(title: "Delete".localized, style: .destructive, handler: {_ in print("Delete".localized)})
-//        pressAlertButtom.addAction(deleteAction)
-//        self.present(pressAlertButtom, animated: true, completion: nil)
-//    }
-//
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        view.backgroundColor = .systemBackground
-//        title = "Info".localized
-//        layout()
-//        requestUrl1()
-//        requestUrl2()
-//    }
-//
-//    func requestUrl1() {
-//        guard let url = URL(string: url1 ) else { return}
-//        let sessions = URLSession.shared
-//        let task = sessions.dataTask(with: url ){data, response, error in
-//            guard let data = data else { return }
-//            do {
-//                let json = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]]
-//                DispatchQueue.main.async {
-//                    self.lableURL1.text = (json![1]["title"]) as? String
-//                }
-//            } catch let error  {
-//                print(error)
-//            }
-//        }
-//        task.resume()
-//    }
-//
-//    func requestUrl2() {
-//        guard let url = URL(string: url2 ) else { return}
-//        let sessions = URLSession.shared
-//        let task = sessions.dataTask(with: url ){data, response, error in
-//            guard let data = data else { return }
-//            do {
-//                let planet = try JSONDecoder().decode(Planet.self, from: data)
-//                DispatchQueue.main.async {
-//                    self.lableURL2.text = planet.orbitalPeriod
-//                }
-//                let residentsURL = planet.residents
-//                self.addResidents(residentsURL: residentsURL)
-//            } catch let error  {
-//                print(error)
-//            }
-//        }
-//        task.resume()
-//    }
-//
-//    func addResidents(residentsURL:[String]){
-//        for url in residentsURL{
-//            guard let url = URL(string: url ) else { return}
-//            let sessions = URLSession.shared
-//            let task = sessions.dataTask(with: url) { data, response, error in
-//                guard let data = data else { return }
-//                do {
-//                    let resident = try JSONDecoder().decode(Resident.self, from: data)
-//                    self.residents.append(resident)
-//                    DispatchQueue.main.async {
-//                        self.tableView.reloadData()
-//                    }
-//                } catch let error {
-//                    print(error)
-//                }
-//            }
-//            task.resume()
-//        }
-//    }
-//
-//    func layout () {
-//        alertButton!.toAutoLayout()
-//        view.addSubviews(alertButton!, lableURL1, lableURL2, tableView)
-//        NSLayoutConstraint.activate([
-//            alertButton!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -150),
-//            alertButton!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-//            alertButton!.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-//            alertButton!.heightAnchor.constraint(equalToConstant: screenHeight / 9)
-//        ])
-//
-//        NSLayoutConstraint.activate([
-//            lableURL1.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-//            lableURL1.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-//            lableURL1.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
-//        ])
-//        NSLayoutConstraint.activate([
-//            lableURL2.topAnchor.constraint(equalTo:lableURL1.bottomAnchor , constant: 20),
-//            lableURL2.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-//            lableURL2.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40)
-//        ])
-//
-//        NSLayoutConstraint.activate([
-//            tableView.topAnchor.constraint(equalTo:lableURL2.bottomAnchor , constant: 20),
-//            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-//            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-//            tableView.bottomAnchor.constraint(equalTo: alertButton!.topAnchor, constant: -40)
-//        ])
-//    }
-//}
-//extension InfoViewController: UITableViewDataSource {
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        residents.count
-//    }
-//
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cell = UITableViewCell()
-//        cell.textLabel?.text = "\(indexPath.row + 1). \(residents[indexPath.row].name)"
-//        return cell
-//    }
-//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        "Inhabitants".localized
-//    }
-}
 
-extension InfoViewController: UITableViewDelegate{
-    
+class InfoViewController: UIViewController {
+
+    weak var coordinator: ProfileCoordinator?
+    weak var feedCoordinator: FeedCoordinator?
+    private let scrollView: UIScrollView = {
+        $0.toAutoLayout()
+        return $0
+    }(UIScrollView())
+
+    private let avatar = UIElementFactory().addImage(imageNamed: "" ,
+                                                     cornerRadius: 50,
+                                                     borderWidth: 1,
+                                                     borderColor: UIColor.appOrange.cgColor,
+                                                     clipsToBounds: true,
+                                                     contentMode: .scaleToFill,
+                                                     tintColor: .appOrange,
+                                                     backgroundColor: .none)
+
+    private let nickName = UIElementFactory().addMediumTextLable(lable: "", textColor
+                                                                 : .textColor,
+                                                                 textSize: 16,
+                                                                 lineHeightMultiple: 1.03,
+                                                                 textAlignment: .center)
+
+    private let nameTitle = UIElementFactory().addMediumTextLable(lable: "editName".localized,
+                                                                  textColor: .mutedTextColor,
+                                                                  textSize: 12,
+                                                                  lineHeightMultiple: 1.03,
+                                                                  textAlignment: .center)
+
+    private let name = UIElementFactory().addMediumTextLable(lable: "",
+                                                             textColor: .textColor,
+                                                             textSize: 16,
+                                                             lineHeightMultiple: 1.03,
+                                                             textAlignment: .center)
+
+    private let professionTitle = UIElementFactory().addMediumTextLable(lable: "profession".localized,
+                                                                  textColor: .mutedTextColor,
+                                                                  textSize: 12,
+                                                                  lineHeightMultiple: 1.03,
+                                                                  textAlignment: .center)
+
+    private let profession = UIElementFactory().addMediumTextLable(lable: "",
+                                                             textColor: .textColor,
+                                                             textSize: 16,
+                                                             lineHeightMultiple: 1.03,
+                                                             textAlignment: .center)
+
+    private let genderTitle = UIElementFactory().addMediumTextLable(lable: "gender".localized,
+                                                                    textColor: .mutedTextColor,
+                                                                    textSize: 12,
+                                                                    lineHeightMultiple: 1.03,
+                                                                    textAlignment: .center)
+
+    private let gender = UIElementFactory().addMediumTextLable(lable: "",
+                                                               textColor: .textColor,
+                                                               textSize: 16,
+                                                               lineHeightMultiple: 1.03,
+                                                               textAlignment: .center)
+
+
+    private let dateOfBirthTitle = UIElementFactory().addMediumTextLable(lable: "dataOfBrith".localized,
+                                                                         textColor: .mutedTextColor,
+                                                                         textSize: 12,
+                                                                         lineHeightMultiple: 1.03,
+                                                                         textAlignment: .center)
+
+
+    private let dateOfBirth = UIElementFactory().addMediumTextLable(lable: "",
+                                                                    textColor: .textColor,
+                                                                    textSize: 16,
+                                                                    lineHeightMultiple: 1.03,
+                                                                    textAlignment: .center)
+
+
+    private let cityTitle = UIElementFactory().addMediumTextLable(lable: "city".localized,
+                                                                  textColor: .mutedTextColor,
+                                                                  textSize: 12,
+                                                                  lineHeightMultiple: 1.03,
+                                                                  textAlignment: .center)
+
+    private let city = UIElementFactory().addMediumTextLable(lable: "",
+                                                             textColor: .textColor,
+                                                             textSize: 16,
+                                                             lineHeightMultiple: 1.03,
+                                                             textAlignment: .center)
+
+    init(user: User) {
+        self.avatar.image = user.avatar
+        self.nickName.text = user.nickName
+        self.name.text = user.fullName
+        self.profession.text = user.profession
+        self.gender.text = user.gender
+        self.dateOfBirth.text = user.dateOfBirth
+        self.city.text = user.city
+
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "basicInformation".localized
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIElementFactory().addIconButtom(icon: UIImage(systemName: "xmark") ?? UIImage(),
+                                                                                                             color: .appOrange,
+                                                                                                             cornerRadius: 0) {
+            self.coordinator?.pop()
+            self.feedCoordinator?.pop()
+        })
+        layout()
+    }
+
+    private func layout() {
+        view.addSubview(scrollView)
+
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor)
+        ])
+
+        scrollView.addSubviews(avatar, nickName, nameTitle, name, professionTitle, profession, genderTitle, gender, dateOfBirthTitle, dateOfBirth, cityTitle, city)
+
+        NSLayoutConstraint.activate([
+            avatar.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 10),
+            avatar.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            avatar.widthAnchor.constraint(equalToConstant: 100),
+            avatar.heightAnchor.constraint(equalToConstant: 100)
+        ])
+
+        NSLayoutConstraint.activate([
+            nickName.topAnchor.constraint(equalTo: avatar.bottomAnchor, constant: 29),
+            nickName.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            nickName.heightAnchor.constraint(equalToConstant: 40)
+        ])
+
+        NSLayoutConstraint.activate([
+            nameTitle.topAnchor.constraint(equalTo: nickName.bottomAnchor, constant: 14),
+            nameTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            nameTitle.heightAnchor.constraint(equalToConstant: 15)
+        ])
+
+        NSLayoutConstraint.activate([
+            name.topAnchor.constraint(equalTo: nameTitle.bottomAnchor, constant: 6),
+            name.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            name.heightAnchor.constraint(equalToConstant: 40)
+        ])
+
+        NSLayoutConstraint.activate([
+            professionTitle.topAnchor.constraint(equalTo: name.bottomAnchor, constant: 14),
+            professionTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            professionTitle.heightAnchor.constraint(equalToConstant: 15)
+        ])
+
+        NSLayoutConstraint.activate([
+            profession.topAnchor.constraint(equalTo: professionTitle.bottomAnchor, constant: 6),
+            profession.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            profession.heightAnchor.constraint(equalToConstant: 40)
+        ])
+
+        NSLayoutConstraint.activate([
+            genderTitle.topAnchor.constraint(equalTo: profession.bottomAnchor, constant: 14),
+            genderTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            genderTitle.heightAnchor.constraint(equalToConstant: 15 )
+        ])
+
+        NSLayoutConstraint.activate([
+            gender.topAnchor.constraint(equalTo: genderTitle.bottomAnchor, constant: 6),
+            gender.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            gender.heightAnchor.constraint(equalToConstant: 40)
+        ])
+
+        NSLayoutConstraint.activate([
+            dateOfBirthTitle.topAnchor.constraint(equalTo: gender.bottomAnchor, constant: 34),
+            dateOfBirthTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            dateOfBirthTitle.heightAnchor.constraint(equalToConstant: 15 )
+        ])
+
+        NSLayoutConstraint.activate([
+            dateOfBirth.topAnchor.constraint(equalTo: dateOfBirthTitle.bottomAnchor, constant: 6),
+            dateOfBirth.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            dateOfBirth.heightAnchor.constraint(equalToConstant: 40)
+        ])
+
+        NSLayoutConstraint.activate([
+            cityTitle.topAnchor.constraint(equalTo: dateOfBirth.bottomAnchor, constant: 15),
+            cityTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            cityTitle.heightAnchor.constraint(equalToConstant: 15 )
+        ])
+
+        NSLayoutConstraint.activate([
+            city.topAnchor.constraint(equalTo: cityTitle.bottomAnchor, constant: 6),
+            city.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            city.heightAnchor.constraint(equalToConstant: 40),
+            city.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor )
+        ])
+    }
 }

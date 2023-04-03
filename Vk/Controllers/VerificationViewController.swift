@@ -7,11 +7,13 @@
 
 import UIKit
 import FirebaseAuth
+import Firebase
+
 
 class VerificationViewController: UIViewController {
 
     weak var coordinator: MainCoordinator?
-//    private let verificationString: String
+    private var isRegistration: Bool
     private let userNumber: String
     private let verificationID: String?
 
@@ -21,8 +23,8 @@ class VerificationViewController: UIViewController {
     }(UIScrollView())
 
     private lazy var verificationLable = UIElementFactory().addBoldTextLable(lable: "verificationLable".localized,
-                                                                        textColor: UIColor(red: 0.965, green: 0.592, blue: 0.027, alpha: 1),
-                                                                        textSize: 18,
+                                                                             textColor: UIColor(red: 0.965, green: 0.592, blue: 0.027, alpha: 1),
+                                                                             textSize: 18,
                                                                              textAlignment: .center)
 
     private lazy var explainLable = UIElementFactory().addRegularTextLable(lable: "explainLable".localized + "\n\(userNumber)",
@@ -37,24 +39,72 @@ class VerificationViewController: UIViewController {
                                                                         lineHeightMultiple: 1.03,
                                                                         textAlignment: .center)
 
-    private let codeTextField = UIElementFactory().addTextField(placeholdertext: "______")
+    private lazy var codeTextField = UIElementFactory().addTextField(placeholdertext: "______", textAlignment: .center, delegate: self)
 
-    private lazy var registrationButtom = UIElementFactory().addBigButtom(lable: "startRegistration".localized, backgroundColor: UISets().ButtomColor) {
+    private lazy var verificationButtom = UIElementFactory().addBigButtom(lable: "verification".localized, backgroundColor: .buttomColor) {
+
         guard let code = self.codeTextField.text else {return}
-        let credetional = PhoneAuthProvider.provider().credential(withVerificationID: self.verificationID!, verificationCode: code)
-        Auth.auth().signIn(with: credetional) { _, error in
+        let credential = PhoneAuthProvider.provider().credential(withVerificationID: self.verificationID!, verificationCode: code)
+
+        Auth.auth().signIn(with: credential) { _, error in
             if error != nil {
-                self.coordinator?.errorAlert(title: "Error".localized, error: error, cancelAction: { _ in
+                self.coordinator?.errorAlert(title: "Error".localized, buttomTitle: "Ok", error: error, cancelAction: { _ in
                     self.codeTextField.text = ""
                 })
             } else {
-                self.coordinator?.tapBarVC()
+                guard let userAuth = Auth.auth().currentUser else  { return }
+                let firestoreCoordinator = FirestoreCoordinator()
+                firestoreCoordinator.getUser(userID: userAuth.uid) { user, error in
+                    if error != nil {
+                        if self.isRegistration {
+                            firestoreCoordinator.writeUsersArray(userID: userAuth.uid)
+                            firestoreCoordinator.writeUser(userID: userAuth.uid, user: User(userID: "0", nickname: "NickName",
+                                                                                            fullName: "ФИО",
+                                                                                            gender: "",
+                                                                                            dateOfBirth: "",
+                                                                                            city: "",
+                                                                                            profession: "Профессия",
+                                                                                            avatar: UIImage(named: "Avatar") ?? UIImage(),
+                                                                                            status: "_____",
+                                                                                            numberOfPhoto: 0,
+                                                                                            numberOfPublications: 0,
+                                                                                            numberOfScribes: 0,
+                                                                                            numberOfSubscriptions: 0))
+                            firestoreCoordinator.getUser(userID: userAuth.uid) { user, error in
+                                self.coordinator?.tapBarVC(user: user!)
+                            }
+                        } else {
+                            self.coordinator?.errorAlert(title: "Error".localized, buttomTitle: "Ok", error: error, cancelAction: { _ in
+                                firestoreCoordinator.writeUsersArray(userID: userAuth.uid)
+                                firestoreCoordinator.writeUser(userID: userAuth.uid, user: User(userID: "0", nickname: "NickName",
+                                                                                                fullName: "ФИО",
+                                                                                                gender: "",
+                                                                                                dateOfBirth: "",
+                                                                                                city: "",
+                                                                                                profession: "Профессия",
+                                                                                                avatar: UIImage(named: "Avatar") ?? UIImage(),
+                                                                                                status: "_____",
+                                                                                                numberOfPhoto: 0,
+                                                                                                numberOfPublications: 0,
+                                                                                                numberOfScribes: 0,
+                                                                                                numberOfSubscriptions: 0))
+                                firestoreCoordinator.getUser(userID: userAuth.uid) { user, error in
+                                    self.coordinator?.tapBarVC(user: user!)
+                                }
+                            })
+                        }
+                    } else {
+                        self.coordinator?.tapBarVC(user: user!)
+                    }
+                }
             }
         }
     }
 
     private let okImage = UIElementFactory().addImage(imageNamed: "okImage",
                                                       cornerRadius: 0,
+                                                      borderWidth: 0,
+                                                      borderColor: nil,
                                                       clipsToBounds: false,
                                                       contentMode: .scaleToFill,
                                                       tintColor: .none,
@@ -66,15 +116,36 @@ class VerificationViewController: UIViewController {
         layout()
     }
 
-    init (userNumber: String, verificationID: String?) {
-//        self.verificationString = verificationString
+    init (userNumber: String, verificationID: String?, isRegistration: Bool) {
+        self.isRegistration = isRegistration
         self.userNumber = userNumber
-        self.verificationID = verificationID
+        if let verificationID = verificationID {
+            self.verificationID = verificationID
+        } else {
+            self.verificationID = UserDefaults.standard.string(forKey: "authVerificationID")
+        }
         super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    private func formatCode(code: String) -> String {
+        let cleanCode = code.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        let mask = "XXXXXX"
+
+        var result = ""
+        var index = cleanCode.startIndex
+        for ch in mask where index < cleanCode.endIndex {
+            if ch == "X" {
+                result.append(cleanCode[index])
+                index = cleanCode.index(after: index)
+            } else {
+                result.append(ch)
+            }
+        }
+        return result
     }
 
     private func layout() {
@@ -88,7 +159,7 @@ class VerificationViewController: UIViewController {
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor)
         ])
 
-        scrollView.addSubviews(verificationLable, explainLable, enterCodeLable, codeTextField, registrationButtom, okImage)
+        scrollView.addSubviews(verificationLable, explainLable, enterCodeLable, codeTextField, verificationButtom, okImage)
 
         NSLayoutConstraint.activate([
             verificationLable.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: -247),
@@ -119,36 +190,19 @@ class VerificationViewController: UIViewController {
         ])
 
         NSLayoutConstraint.activate([
-            registrationButtom.topAnchor.constraint(equalTo: codeTextField.bottomAnchor, constant: 86),
-            registrationButtom.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            registrationButtom.widthAnchor.constraint(equalToConstant: 261),
-            registrationButtom.heightAnchor.constraint(equalToConstant: 47)
+            verificationButtom.topAnchor.constraint(equalTo: codeTextField.bottomAnchor, constant: 86),
+            verificationButtom.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            verificationButtom.widthAnchor.constraint(equalToConstant: 261),
+            verificationButtom.heightAnchor.constraint(equalToConstant: 47)
         ])
 
         NSLayoutConstraint.activate([
-            okImage.topAnchor.constraint(equalTo: registrationButtom.bottomAnchor, constant: 43),
+            okImage.topAnchor.constraint(equalTo: verificationButtom.bottomAnchor, constant: 43),
             okImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             okImage.widthAnchor.constraint(equalToConstant: 86),
             okImage.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
-
-    private func formatCode(code: String) -> String {
-         let cleanCode = code.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-         let mask = "XXXXXX"
-
-         var result = ""
-         var index = cleanCode.startIndex
-         for ch in mask where index < cleanCode.endIndex {
-             if ch == "X" {
-                 result.append(cleanCode[index])
-                 index = cleanCode.index(after: index)
-             } else {
-                 result.append(ch)
-             }
-         }
-         return result
-     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -185,10 +239,11 @@ extension VerificationViewController: UITextFieldDelegate{
         view.endEditing(true)
         return true
     }
+
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-    guard let text = textField.text else { return false }
-    let newString = (text as NSString).replacingCharacters(in: range, with: string)
-    textField.text = formatCode(code: newString)
-    return false
-}
+        guard let text = textField.text else { return false }
+        let newString = (text as NSString).replacingCharacters(in: range, with: string)
+        textField.text = formatCode(code: newString)
+        return false
+    }
 }

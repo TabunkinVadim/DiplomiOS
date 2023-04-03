@@ -4,66 +4,188 @@
 //
 //  Created by Табункин Вадим on 03.03.2022.
 //
-import StorageService
+
 import UIKit
 
-class FeedViewController: UIViewController, LikedProtocol {
 
-    
+class FeedViewController: UIViewController, PostProtocol {
 
-    var upperHeader: UpperFeedHeaderView = UpperFeedHeaderView(reuseIdentifier: UpperFeedHeaderView.identifier)
-    var heder:FeedHeaderView = FeedHeaderView (reuseIdentifier: FeedHeaderView.identifier)
-    var personalPosts: [Post] = posts
-    private var index: Int = 0
+    weak var coordinator: FeedCoordinator?
+    private let user: User
+    private var countRow = 0
+    private var userNumber = 0
+    private var loadMoreStatus = false
+    private var refreshControl:UIRefreshControl!
+    private var loadUser = User(userID: "", nickname: "", fullName: "", gender: "", dateOfBirth: "", city: "", profession: "", avatar: UIImage(named: "Avatar")!, status: "",numberOfPhoto: 0, numberOfPublications: 0, numberOfScribes: 0, numberOfSubscriptions: 0  )
+    private lazy var upperHeader: UpperFeedHeaderView = UpperFeedHeaderView(reuseIdentifier: UpperFeedHeaderView.identifier)
+    private var heder:FeedHeaderView = FeedHeaderView (reuseIdentifier: FeedHeaderView.identifier)
+    private var feedPosts: [Post] = []
     private lazy var tableView = UIElementFactory().addFeedTable(dataSource: self, delegate: self)
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadPosts), name: Notification.Name.reloadPosts, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(likedNotification), name: Notification.Name.likedNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(turnDownLike), name: Notification.Name.turnDownLike, object: nil)
-//        header.delegateClose = self
-        layout()
+    init (user: User) {
+        self.user = user
+        super.init(nibName: nil, bundle: nil)
     }
 
-    @objc func reloadPosts() {
-        tableView.reloadData()
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
-    @objc func turnDownLike() {
-        personalPosts[index].likes -= 1
+
+    // MARK: Delegate PostProtocol
+    func openProfile(userID: String) {
+        if user.userID == userID {
+
+        } else {
+            let firestoreCoordinator = FirestoreCoordinator()
+            firestoreCoordinator.getUser(userID: userID) { user, error in
+                guard let user = user else {return}
+                self.coordinator?.profileVC(user: user, isFriend: true)
+            }
+        }
     }
-    @objc func likedNotification() {
-        personalPosts[index].likes += 1
-    }
-    
-    func liked(description: String) {
+
+    func liked(userID: String, postIndex: Int) {
         let coreDataCoordinator = CoreDataCoordinator()
         let index: Int? = {
-            for (index, post) in  personalPosts.enumerated()  {
-                if post.description == description {
+            for (index, post) in  feedPosts.enumerated()  {
+                if post.userID == userID && post.postIndex == postIndex {
                     return index
                 }
             }
             return nil
         }()
-        guard let index = index else {
-            return
-        }
-
-        let indexFavoritPost = coreDataCoordinator.findPost(description: description)
+        guard let index = index else { return }
+        let indexFavoritPost = coreDataCoordinator.findPost(userID: userID, postIndex: postIndex)
         if let indexFavoritPost = indexFavoritPost {
-            NotificationCenter.default.post(name: NSNotification.Name.turnDownLike, object: nil)
+            var post = self.feedPosts[index]
+            post.likes += 1
+            let firestoreCoordinator = FirestoreCoordinator()
+            firestoreCoordinator.writePost(post: post)
+            NotificationCenter.default.post(name: NSNotification.Name.turnDownLike, object: nil, userInfo: ["userID": userID, "postIndex": postIndex])
             coreDataCoordinator.deletePosts(index: indexFavoritPost)
         } else {
-            NotificationCenter.default.post(name: NSNotification.Name.likedNotification, object: nil)
-            coreDataCoordinator.sevePost(post: personalPosts[index])
+            var post = self.feedPosts[index]
+            post.likes += 1
+            let firestoreCoordinator = FirestoreCoordinator()
+            firestoreCoordinator.writePost(post: post)
+            NotificationCenter.default.post(name: NSNotification.Name.likedNotification, object: nil, userInfo: ["userID": userID, "postIndex": postIndex])
+            coreDataCoordinator.sevePost(post: feedPosts[index])
         }
         NotificationCenter.default.post(name: NSNotification.Name.reloadPosts, object: nil)
+        self.tableView.reloadData()
     }
 
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    // MARK: Notification likes
+    @objc func likedNotification(notification:Notification) {
+        guard let userInfo = notification.userInfo else {return}
+        for (index, post) in feedPosts.enumerated() {
+            if post.userID == userInfo["userID"] as! String && post.postIndex == userInfo["postIndex"] as! Int {
+                feedPosts[index].likes += 1
+                self.tableView.reloadData()
+            }
+        }
+    }
+
+    @objc func turnDownLike(notification: Notification) {
+        guard let userInfo = notification.userInfo else {return}
+        for (index, post) in feedPosts.enumerated() {
+            if post.userID == userInfo["userID"] as! String && post.postIndex == userInfo["postIndex"] as! Int {
+                feedPosts[index].likes -= 1
+                self.tableView.reloadData()
+            }
+        }
+    }
+
+    @objc func reloadPosts() {
+        tableView.reloadData()
+    }
+
+    // MARK: Load content
+    @objc func refresh() {
+        self.loadMoreStatus = false
+        self.upperHeader.reloadStories()
+        loadStories()
+        countRow = 0
+        userNumber = 0
+        feedPosts = []
         self.tableView.reloadData()
-       }
+        self.refreshControl.endRefreshing()
+    }
+
+    func loadMore() {
+        if !loadMoreStatus  {
+            self.loadMoreStatus = true
+            let firestoreCoordinator = FirestoreCoordinator()
+            firestoreCoordinator.getUsersArray { usersArray, error in
+                guard let user = usersArray["user\(self.userNumber)"] else {
+                    self.loadMoreStatus = false
+                    return}
+                firestoreCoordinator.getUser(userID: user) { user, error in
+                    guard let user = user else {
+                        self.loadMoreStatus = false
+                        return
+                    }
+                    self.loadUser = user
+                    firestoreCoordinator.getPost(userID: user.userID, postIndex: self.countRow) { post, error in
+                        guard let post = post else {
+                            self.userNumber += 1
+                            self.countRow = 0
+                            self.loadMoreStatus = false
+                            return
+                        }
+                        var newLoadPost = post
+                        newLoadPost.avatar = user.avatar
+                        newLoadPost.author = user.fullName
+                        self.feedPosts.append(newLoadPost)
+                        self.countRow += 1
+                        self.loadMoreStatus = false
+                        self.tableView.reloadData()
+                    }
+                }
+            }
+        }
+    }
+
+    func loadStories () {
+        if !loadMoreStatus {
+            self.loadMoreStatus = true
+            let firestoreCoordinator = FirestoreCoordinator()
+            firestoreCoordinator.getUsersArray { usersArray, error in
+                for i in usersArray {
+                    guard let user = usersArray[i.key] else {
+                        self.loadMoreStatus = false
+                        return
+                    }
+                    firestoreCoordinator.getUser(userID: user) { user, error in
+                        guard let user = user else {
+                            self.loadMoreStatus = false
+                            return
+                        }
+                        self.upperHeader.setStories(addAvatar: user.avatar)
+                        self.loadMoreStatus = false
+                    }
+                }
+            }
+        }
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadPosts), name: Notification.Name.reloadPosts, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(likedNotification(notification:)), name: Notification.Name.likedNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(turnDownLike(notification:)), name: Notification.Name.turnDownLike, object: nil)
+        refreshControl = UIRefreshControl()
+        refreshControl.attributedTitle = NSAttributedString(string: "Идет обновление...")
+        refreshControl.addTarget(self, action: #selector(self.refresh), for: UIControl.Event.valueChanged)
+        tableView.addSubview(refreshControl)
+        loadStories()
+        loadMore()
+        layout()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = true
+    }
 
     private func layout() {
         view.addSubview(tableView)
@@ -75,45 +197,18 @@ class FeedViewController: UIViewController, LikedProtocol {
             tableView.widthAnchor.constraint(equalTo: view.widthAnchor)
         ])
     }
-
-
-
-
-
-    
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//
-//        self.navigationController?.navigationBar.isHidden = true
-//
-//        // подписаться на уведомления
-//        let nc = NotificationCenter.default
-//        nc.addObserver(self, selector: #selector(kbdShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-//        nc.addObserver(self, selector: #selector(kbdHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-//    }
-//
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//        // отписаться от уведомлений
-//        let nc = NotificationCenter.default
-//        nc.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-//        nc.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-//    }
-//
-//    //     Изменение отступов при появлении клавиатуры
-//    @objc private func kbdShow(notification: NSNotification) {
-//        if let kbdSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-//            feedScrollView.contentInset.bottom = kbdSize.height
-//            feedScrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: kbdSize.height, right: 0) }
-//    }
-//
-//    @objc private func kbdHide(notification: NSNotification) {
-//        feedScrollView.contentInset.bottom = .zero
-//        feedScrollView.verticalScrollIndicatorInsets = .zero
-//    }
 }
 
 extension FeedViewController : UITableViewDelegate {
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let currentOffset = scrollView.contentOffset.y
+        let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
+        let deltaOffset = maximumOffset - currentOffset
+        if deltaOffset <= 0 {
+            loadMore()
+        }
+    }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var autiHeight:CGFloat {
@@ -122,18 +217,10 @@ extension FeedViewController : UITableViewDelegate {
         return autiHeight
     }
 
-
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//            navigationController?.pushViewController(PostViewController(), animated: true)
-//        if indexPath.section == 0{
-////            coordinator?.photoVC()
-//        } else {
-//            print("\(indexPath)")
-            index = indexPath.row
-//        }
+        self.coordinator?.PostVC(post: self.feedPosts[indexPath.row], user: self.user)
     }
 }
-
 
 extension FeedViewController : UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -156,54 +243,17 @@ extension FeedViewController : UITableViewDataSource {
             return FeedHeaderView()
         }
     }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        personalPosts.count
+        self.feedPosts.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: PostTableViewCell
         cell = (tableView.dequeueReusableCell(withIdentifier: PostTableViewCell.identifier , for: indexPath) as! PostTableViewCell)
-//        cell.delegate = self
         cell.delegate = self
-        cell.setupCell(model: self.personalPosts[indexPath.row], set: indexPath.row)
-        cell.index = indexPath.row
+        cell.setupCell(model: self.feedPosts[indexPath.row], autor: self.feedPosts[indexPath.row].author, avatar: self.feedPosts[indexPath.row].avatar)
         cell.updateImageViewConstraint(view.bounds.size)
-        let tap = UITapGestureRecognizer(target: self, action: #selector(doubleTapped))
-        tap.numberOfTapsRequired = 2
-        cell.addGestureRecognizer(tap)
         return cell
     }
-    @objc private func doubleTapped() {
-
-        let coreDataCoordinator = CoreDataCoordinator()
-        let indexFavoritPost = coreDataCoordinator.findPost(description: personalPosts[index].description)
-        if let indexFavoritPost = indexFavoritPost {
-            NotificationCenter.default.post(name: NSNotification.Name.turnDownLike, object: nil)
-            coreDataCoordinator.deletePosts(index: indexFavoritPost)
-        } else {
-            NotificationCenter.default.post(name: NSNotification.Name.likedNotification, object: nil)
-            coreDataCoordinator.sevePost(post: personalPosts[index])
-        }
-        NotificationCenter.default.post(name: NSNotification.Name.reloadPosts, object: nil)
-    }
-
-
 }
-
-//
-//extension FeedViewController: UITextFieldDelegate {
-//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        view.endEditing(true)
-//        feedModel.chenge(.tapButton(checkModel: checkModel, textField: word))
-//        return true
-//    }
-
-
-//}
-//
-//public extension NSNotification.Name {
-//    static let redLable = NSNotification.Name("redLable")
-//    static let greenLable = NSNotification.Name("greenLable")
-//}
-//
-//

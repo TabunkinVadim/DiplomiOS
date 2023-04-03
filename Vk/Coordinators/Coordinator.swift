@@ -5,7 +5,6 @@
 //  Created by Табункин Вадим on 26.06.2022.
 //
 
-import Foundation
 import UIKit
 
 
@@ -14,4 +13,5 @@ protocol Coordinator: AnyObject {
     var navigationController: UINavigationController {get set}
     
     func start()
+    func pop()
 }
