@@ -73,5 +73,12 @@
 <img src="https://user-images.githubusercontent.com/98537353/229608131-6bab5e07-d67b-4389-a9ca-265a08521da8.png"  width="300"> 
 <img src="https://user-images.githubusercontent.com/98537353/229608154-a563c77c-6c6d-4988-9b07-a828b6c0ca36.png"  width="300">   
 <img src="https://user-images.githubusercontent.com/98537353/229608178-f510dccc-4bfa-493d-80f2-0321c38c6192.png"  width="300">   
+   
+ Выполненна локализация на Русском и Английском языках:  
+<img src="https://user-images.githubusercontent.com/98537353/229623247-6b856158-a135-4445-ba7f-b7e5e91fbe57.png"  width="300"> 
+<img src="https://user-images.githubusercontent.com/98537353/229623314-39bbd766-95a4-4689-9040-0d63ef2d0666.png"  width="300"> 
+<img src="https://user-images.githubusercontent.com/98537353/229623363-1dcbdf31-3c38-4cad-b26a-6c5c0abdc3b1.png"  width="300">
+<img src="https://user-images.githubusercontent.com/98537353/229623385-9b9d1a64-76e1-4746-aa50-687331ae8033.png"  width="300"> 
+<img src="https://user-images.githubusercontent.com/98537353/229623402-08ec105b-f1bc-455f-bf55-4e30d07365e5.png"  width="300">  
   
 ## Спасибо за внимание!
