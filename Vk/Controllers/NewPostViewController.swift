@@ -23,10 +23,7 @@ class NewPostViewController: UIViewController, UIGestureRecognizerDelegate  {
         return $0
     }(UIScrollView())
 
-    private lazy var exitButtom = UIElementFactory().addImageButton(image: UIImage(named: "exitButtom") ,
-                                                                    cornerRadius: 0,
-                                                                    borderWidth: 0,
-                                                                    borderColor: nil) {
+    private lazy var exitButtom = UIElementFactory().addIconButtom(icon: UIImage(systemName: "arrow.left")!, color: .appOrange, cornerRadius: 0) {
         self.coordinator?.navigationController.popViewController(animated: true)
     }
 
@@ -36,11 +33,7 @@ class NewPostViewController: UIViewController, UIGestureRecognizerDelegate  {
                                                                      lineHeightMultiple: 1.24,
                                                                      textAlignment: .center)
 
-    private lazy var okButtom = UIElementFactory().addImageButton(image: UIImage(named: "okButtom"),
-                                                                  cornerRadius: 0,
-                                                                  borderWidth: 0,
-                                                                  borderColor: nil) {
-
+    private lazy var okButtom = UIElementFactory().addIconButtom(icon: UIImage(systemName: "checkmark")!, color: .appOrange, cornerRadius: 0) {
         self.post.description = self.descriptionPostTextView.text!
         self.user.userPosts.append(self.post)
         for index in 0 ... self.user.userPosts.count - 1 {

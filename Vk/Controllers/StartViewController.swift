@@ -57,7 +57,7 @@ class StartViewController: UIViewController {
         NSLayoutConstraint.activate([
             startLoginButtom.topAnchor.constraint(equalTo: startRegistrationButtom.bottomAnchor, constant: 30),
             startLoginButtom.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            startLoginButtom.widthAnchor.constraint(equalToConstant: 118),
+            startLoginButtom.widthAnchor.constraint(equalToConstant: 200),
             startLoginButtom.heightAnchor.constraint(equalToConstant: 20)
         ])
     }

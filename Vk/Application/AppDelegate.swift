@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         MainCoordinator.shared.start()
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = MainCoordinator.shared.navigationController// nc
+        window?.rootViewController = MainCoordinator.shared.navigationController
         window?.makeKeyAndVisible()
         let navBarAppearance = UINavigationBarAppearance()
         navBarAppearance.configureWithOpaqueBackground()

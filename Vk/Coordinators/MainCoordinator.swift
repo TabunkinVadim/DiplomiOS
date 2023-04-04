@@ -21,25 +21,25 @@ final class MainCoordinator {
 
     func start(){
         Auth.auth().addStateDidChangeListener() { auth, user in
-            if user != nil {
+
+            guard let user = user else {
+                self.startVC()
+                return}
+            if auth.currentUser?.uid != nil {
+                let firestoreCoordinator = FirestoreCoordinator()
+                firestoreCoordinator.getUser(userID: user.uid) { user, error in
+                    guard let user = user else {
+                        self.startVC()
+                        return
+                    }
+                    self.tapBarVC(user: user)
+                }
             } else {
+                self.startVC()
                 self.errorAlert(title: "Error".localized, buttomTitle: "Ok".localized, error: NSError(domain: "Кто-то вышел из вашего аккаунта", code: 180)) { _ in
                     self.navigationController.popViewController(animated: true)
                 }
             }
-        }
-
-        if let userAuth = Auth.auth().currentUser{
-            let firestoreCoordinator = FirestoreCoordinator()
-            firestoreCoordinator.getUser(userID: userAuth.uid) { user, error in
-                guard let user = user else {
-                    self.startVC()
-                    return
-                }
-                self.tapBarVC(user: user)
-            }
-        } else {
-            startVC()
         }
     }
 
@@ -121,13 +121,17 @@ final class MainCoordinator {
     }
 
     func errorAlert (title: String, buttomTitle: String, error: Error?, cancelAction:((UIAlertAction) -> Void)?) {
+        var alertStyle = UIAlertController.Style.actionSheet
+        if (UIDevice.current.userInterfaceIdiom == .pad) {
+          alertStyle = UIAlertController.Style.alert
+        }
         let alert: UIAlertController = {
-            $0.title = title
             if let error = error {
                 $0.message = error.localizedDescription
             } else { $0.message = "UnknownError".localized }
             return $0
-        }(UIAlertController())
+        }(UIAlertController(title: title, message: "UnknownError".localized , preferredStyle: alertStyle))
+
         alert.addAction(UIAlertAction(title: buttomTitle, style: .cancel, handler: cancelAction))
         navigationController.present(alert, animated: true)
     }

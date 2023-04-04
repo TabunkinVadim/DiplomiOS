@@ -86,15 +86,19 @@ final class ProfileCoordinator: Coordinator{
         navigationController.present(alert, animated: true)
     }
 
-    func errorAlert (error: Error?, cancelAction:((UIAlertAction) -> Void)?) {
+    func errorAlert (title: String, buttomTitle: String, error: Error?, cancelAction:((UIAlertAction) -> Void)?) {
+        var alertStyle = UIAlertController.Style.actionSheet
+        if (UIDevice.current.userInterfaceIdiom == .pad) {
+          alertStyle = UIAlertController.Style.alert
+        }
         let alert: UIAlertController = {
-            $0.title = "Ошибка"
             if let error = error {
                 $0.message = error.localizedDescription
-            } else { $0.message = "Неизвесная ошибка" }
+            } else { $0.message = "UnknownError".localized }
             return $0
-        }(UIAlertController())
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel, handler: cancelAction))
+        }(UIAlertController(title: title, message: "UnknownError".localized , preferredStyle: alertStyle))
+
+        alert.addAction(UIAlertAction(title: buttomTitle, style: .cancel, handler: cancelAction))
         navigationController.present(alert, animated: true)
     }
 

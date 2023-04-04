@@ -10,7 +10,6 @@
 		19A0927494A62BD73A4E4BCB /* Pods_Vk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 374BF3B94C9D86D3942CC9BF /* Pods_Vk.framework */; };
 		3D949D5D4B8ACF358CB884D7 /* Pods_StorageService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C01C93234AACFBCA06D4522 /* Pods_StorageService.framework */; };
 		66081621A8704BBB62F5312E /* Pods_StorageService_StorageServiceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BC2031E4A084436B03B0E9C /* Pods_StorageService_StorageServiceTests.framework */; };
-		6E01408628F87C3200BAB2AD /* ProfileCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E01408528F87C3200BAB2AD /* ProfileCoordinatorTests.swift */; };
 		6E030B0727CBFCFC004609EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E030B0627CBFCFC004609EE /* AppDelegate.swift */; };
 		6E030B0B27CBFCFC004609EE /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E030B0A27CBFCFC004609EE /* MainTabBarController.swift */; };
 		6E030B1027CBFD01004609EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E030B0F27CBFD01004609EE /* Assets.xcassets */; };
@@ -126,7 +125,6 @@
 		4BC2031E4A084436B03B0E9C /* Pods_StorageService_StorageServiceTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_StorageService_StorageServiceTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		537D7157F6077529F31BEC7A /* Pods-StorageService.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StorageService.debug.xcconfig"; path = "Target Support Files/Pods-StorageService/Pods-StorageService.debug.xcconfig"; sourceTree = "<group>"; };
 		6E01408328F87C3100BAB2AD /* VkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		6E01408528F87C3200BAB2AD /* ProfileCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCoordinatorTests.swift; sourceTree = "<group>"; };
 		6E030B0327CBFCFC004609EE /* Vk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E030B0627CBFCFC004609EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6E030B0A27CBFCFC004609EE /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
@@ -233,21 +231,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		6E01408428F87C3200BAB2AD /* VkTests */ = {
-			isa = PBXGroup;
-			children = (
-				6E01408528F87C3200BAB2AD /* ProfileCoordinatorTests.swift */,
-			);
-			path = VkTests;
-			sourceTree = "<group>";
-		};
 		6E030AFA27CBFCFC004609EE = {
 			isa = PBXGroup;
 			children = (
 				6E030B0527CBFCFC004609EE /* Vk */,
 				6E9D02B3283D7D59000F6E91 /* StorageService */,
 				6E9D02C0283D7D59000F6E91 /* StorageServiceTests */,
-				6E01408428F87C3200BAB2AD /* VkTests */,
 				6E030B0427CBFCFC004609EE /* Products */,
 				6E9D02D4283E9CAA000F6E91 /* Frameworks */,
 				C73E24637C46615620A154DB /* Pods */,
@@ -749,7 +738,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6E01408628F87C3200BAB2AD /* ProfileCoordinatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
