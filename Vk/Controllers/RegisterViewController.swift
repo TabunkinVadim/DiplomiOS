@@ -10,12 +10,12 @@ import Firebase
 import FlagPhoneNumber
 
 
-class RegisterViewController: UIViewController {
+class RegisterViewController: UIViewController, UIGestureRecognizerDelegate {
 
     weak var coordinator: MainCoordinator?
     private var phoneNumber: String?
     private let scrollView: UIScrollView = {
-        $0.translatesAutoresizingMaskIntoConstraints = false
+        $0.toAutoLayout()
         return $0
     }(UIScrollView())
 
@@ -46,7 +46,9 @@ class RegisterViewController: UIViewController {
         guard let phoneNumber = self.phoneNumber else {return}
         PhoneAuthProvider.provider().verifyPhoneNumber(phoneNumber, uiDelegate: nil) { (verificationID, error) in
             if error != nil {
-                print(error?.localizedDescription ?? "Error")
+                self.coordinator?.errorAlert(title: "Error".localized, buttomTitle: "", error: error, cancelAction: { _ in
+                    print(error?.localizedDescription ?? "Error")
+                })
             } else {
                 UserDefaults.standard.set(verificationID, forKey: "authVerificationID")
                 self.coordinator?.verificationVC(userNumber: self.numberTextField.text!, verificationID: verificationID, isRegistration: true)
@@ -64,6 +66,10 @@ class RegisterViewController: UIViewController {
         super.viewDidLoad()
         numberTextField.delegate = self
         setController()
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.hideKeyboardOnSwipeDown))
+        tap.delegate = self
+        tap.numberOfTapsRequired = 1
+        self.scrollView.addGestureRecognizer(tap)
         layout()
     }
 
@@ -73,6 +79,10 @@ class RegisterViewController: UIViewController {
         }
         nextButtom.alpha = 0.5
         nextButtom.isEnabled = false
+    }
+
+    @objc func hideKeyboardOnSwipeDown() {
+        view.endEditing(true)
     }
 
     private func layout() {

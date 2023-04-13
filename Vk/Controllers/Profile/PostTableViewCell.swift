@@ -21,7 +21,7 @@ class PostTableViewCell: UITableViewCell {
                                                               borderWidth: 0,
                                                               borderColor: nil,
                                                               clipsToBounds: true,
-                                                              contentMode: .scaleToFill,
+                                                              contentMode: .scaleAspectFill,
                                                               tintColor: .none,
                                                               backgroundColor: nil)
 
@@ -31,7 +31,7 @@ class PostTableViewCell: UITableViewCell {
         self.delegate?.openProfile(userID: self.userID)
     }
 
-    private let postProfession = UIElementFactory().addRegularTextLable(lable: "Дизайнер",
+    private let postProfession = UIElementFactory().addRegularTextLable(lable: "",
                                                                         textColor: UIColor(red: 0.495, green: 0.507, blue: 0.512, alpha: 1),
                                                                         textSize: 14,
                                                                         lineHeightMultiple: 1.18,

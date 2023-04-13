@@ -20,8 +20,8 @@ final class MainCoordinator {
     }
 
     func start(){
+        self.startLaunchSkreenVC()
         Auth.auth().addStateDidChangeListener() { auth, user in
-
             guard let user = user else {
                 self.startVC()
                 return}
@@ -29,9 +29,11 @@ final class MainCoordinator {
                 let firestoreCoordinator = FirestoreCoordinator()
                 firestoreCoordinator.getUser(userID: user.uid) { user, error in
                     guard let user = user else {
+                        self.navigationController.viewControllers[0].removeFromParent()
                         self.startVC()
                         return
                     }
+                    self.navigationController.viewControllers[0].removeFromParent()
                     self.tapBarVC(user: user)
                 }
             } else {
@@ -41,6 +43,14 @@ final class MainCoordinator {
                 }
             }
         }
+    }
+
+    func startLaunchSkreenVC() {
+        let vc = LaunchScreenViewController()
+        vc.coordinator = self
+        vc.view.backgroundColor = .backgroundColor
+        navigationController.navigationBar.isHidden = true
+        navigationController.pushViewController(vc, animated: false)
     }
 
     func startVC() {
@@ -123,7 +133,7 @@ final class MainCoordinator {
     func errorAlert (title: String, buttomTitle: String, error: Error?, cancelAction:((UIAlertAction) -> Void)?) {
         var alertStyle = UIAlertController.Style.actionSheet
         if (UIDevice.current.userInterfaceIdiom == .pad) {
-          alertStyle = UIAlertController.Style.alert
+            alertStyle = UIAlertController.Style.alert
         }
         let alert: UIAlertController = {
             if let error = error {

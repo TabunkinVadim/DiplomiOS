@@ -24,7 +24,7 @@ class ProfileHeaderView: UITableViewHeaderFooterView  {
                                                      borderWidth: 0,
                                                      borderColor: nil,
                                                      clipsToBounds: true,
-                                                     contentMode: .scaleToFill,
+                                                     contentMode: .scaleAspectFill,
                                                      tintColor: .none,
                                                      backgroundColor: .none)
 
@@ -40,7 +40,7 @@ class ProfileHeaderView: UITableViewHeaderFooterView  {
 
     private lazy var moreButtom = UIElementFactory().addIconButtom(icon: UIImage(systemName: "line.3.horizontal") ?? UIImage(),
                                                                    color: .appOrange, cornerRadius: 0) {
-        print("More")
+        self.delegateEditProfile?.moreProfile()
     }
 
     private let infoIcon = UIElementFactory().addImage(imageNamed: "exclamationmark.circle.fill",

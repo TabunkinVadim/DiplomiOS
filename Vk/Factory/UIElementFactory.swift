@@ -182,7 +182,7 @@ class UIElementFactory {
         return {
             $0.toAutoLayout()
             $0.delegate = delegate
-            $0.backgroundColor = UIColor(red: 0.961, green: 0.953, blue: 0.933, alpha: 1)
+            $0.backgroundColor = .backgroundCellColor
             $0.layer.cornerRadius = 10
             $0.font = UIFont(name: "Inter-Medium", size: 16)
             $0.textAlignment = textAlignment

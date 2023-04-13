@@ -68,6 +68,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super .viewDidAppear(animated)
         checkLocationAutorization()
+        userButtomTaped()
     }
 
     override func viewDidLoad() {
@@ -108,7 +109,7 @@ class MapViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     private func layout() {
-        view.addSubviews(mapKitView, userLocationButtom,  mapTypeButton, removeAllPinsButton) //addPinButtom,
+        view.addSubviews(mapKitView, userLocationButtom,  mapTypeButton, removeAllPinsButton)
         NSLayoutConstraint.activate([
             mapKitView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             mapKitView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -245,7 +246,6 @@ extension MapViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.first else { return }
         self.location = location
-        centrAndZoomInMapToLocation(location.coordinate)
     }
 }
 

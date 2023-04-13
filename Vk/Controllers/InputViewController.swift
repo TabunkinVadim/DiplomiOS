@@ -12,7 +12,7 @@ import FirebaseFirestore
 import FlagPhoneNumber
 
 
-class InputViewController: UIViewController {
+class InputViewController: UIViewController, UIGestureRecognizerDelegate {
 
     weak var coordinator: MainCoordinator?
     private var phoneNumber: String?
@@ -53,6 +53,10 @@ class InputViewController: UIViewController {
         super.viewDidLoad()
         numberTextField.delegate = self
         setController()
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.hideKeyboardOnSwipeDown))
+        tap.delegate = self
+        tap.numberOfTapsRequired = 1
+        self.scrollView.addGestureRecognizer(tap)
         layout()
     }
 
@@ -62,6 +66,10 @@ class InputViewController: UIViewController {
         }
         confirmButtom.alpha = 0.5
         confirmButtom.isEnabled = false
+    }
+
+    @objc func hideKeyboardOnSwipeDown() {
+        view.endEditing(true)
     }
 
     private func layout() {

@@ -26,13 +26,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
         return true
     }
-
-    func applicationWillTerminate(_ application: UIApplication) {
-        do {
-            try Firebase.Auth.auth().signOut()
-        } catch {
-            print("Error".localized)
-        }
-    }
 }
 

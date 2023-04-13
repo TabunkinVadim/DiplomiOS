@@ -10,7 +10,7 @@ import FirebaseAuth
 import Firebase
 
 
-class VerificationViewController: UIViewController {
+class VerificationViewController: UIViewController, UIGestureRecognizerDelegate  {
 
     weak var coordinator: MainCoordinator?
     private var isRegistration: Bool
@@ -113,6 +113,10 @@ class VerificationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         codeTextField.delegate = self
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.hideKeyboardOnSwipeDown))
+        tap.delegate = self
+        tap.numberOfTapsRequired = 1
+        self.scrollView.addGestureRecognizer(tap)
         layout()
     }
 
@@ -129,6 +133,10 @@ class VerificationViewController: UIViewController {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc func hideKeyboardOnSwipeDown() {
+        view.endEditing(true)
     }
 
     private func formatCode(code: String) -> String {

@@ -11,6 +11,7 @@ import UIKit
 protocol ProfileViewControllerProtocol: AnyObject {
     func editProfile ()
     func infoProfile ()
+    func moreProfile ()
 }
 
 protocol ProfileHeaderActivityProtocol: AnyObject {

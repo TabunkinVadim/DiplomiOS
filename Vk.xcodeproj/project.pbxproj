@@ -15,6 +15,7 @@
 		6E030B1027CBFD01004609EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E030B0F27CBFD01004609EE /* Assets.xcassets */; };
 		6E030B1327CBFD01004609EE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E030B1127CBFD01004609EE /* LaunchScreen.storyboard */; };
 		6E030B3827DDE266004609EE /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E030B3727DDE266004609EE /* ProfileHeaderView.swift */; };
+		6E09CC9629DE09AA00EC6F71 /* LaunchScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E09CC9529DE09AA00EC6F71 /* LaunchScreenViewController.swift */; };
 		6E10E9B72968614600B566C6 /* FirestoreCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E10E9B62968614500B566C6 /* FirestoreCoordinator.swift */; };
 		6E161DA42864EC15008591E8 /* MainCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E161DA32864EC15008591E8 /* MainCoordinator.swift */; };
 		6E161DA62864EE99008591E8 /* ProfileCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E161DA52864EE99008591E8 /* ProfileCoordinator.swift */; };
@@ -132,6 +133,7 @@
 		6E030B1227CBFD01004609EE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6E030B1427CBFD01004609EE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6E030B3727DDE266004609EE /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
+		6E09CC9529DE09AA00EC6F71 /* LaunchScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchScreenViewController.swift; sourceTree = "<group>"; };
 		6E10E9B62968614500B566C6 /* FirestoreCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreCoordinator.swift; sourceTree = "<group>"; };
 		6E161DA32864EC15008591E8 /* MainCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainCoordinator.swift; sourceTree = "<group>"; };
 		6E161DA52864EE99008591E8 /* ProfileCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileCoordinator.swift; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 				6E807C3229210C5200E427F0 /* Feed */,
 				6E030B3627DDE23E004609EE /* Profile */,
 				6EB5E83F29CB32F000A84460 /* Publication */,
+				6E09CC9529DE09AA00EC6F71 /* LaunchScreenViewController.swift */,
 				6E807C1C291ECEDD00E427F0 /* StartViewController.swift */,
 				6E807C302920FDBD00E427F0 /* InputViewController.swift */,
 				6E807C25291FCC7800E427F0 /* RegisterViewController.swift */,
@@ -788,6 +791,7 @@
 				6E514B4928BB45E0008F9E89 /* CoreData.xcdatamodeld in Sources */,
 				6E807C1D291ECEDD00E427F0 /* StartViewController.swift in Sources */,
 				6E7E9FBB29D899900041E34E /* InfoViewController.swift in Sources */,
+				6E09CC9629DE09AA00EC6F71 /* LaunchScreenViewController.swift in Sources */,
 				6E52662528E02E2400168907 /* MapCoordinator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -75,21 +75,21 @@ final class ProfileCoordinator: Coordinator{
     }
 
 
-    func singUpAlert(yesAction:((UIAlertAction) -> Void)?, cancelAction:((UIAlertAction) -> Void)?) {
+    func alert(title: String, massage: String, yesAction:((UIAlertAction) -> Void)?, cancelAction:((UIAlertAction) -> Void)?) {
         let alert: UIAlertController = {
-            $0.title = "Создание аккаунта"
-            $0.message = "Вы хотите создать аккаунт?"
+            $0.title = title
+            $0.message = massage
             return $0
         }(UIAlertController())
-        alert.addAction(UIAlertAction(title: "Да", style: .default, handler: yesAction))
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel, handler: cancelAction))
+        alert.addAction(UIAlertAction(title: "Yes".localized, style: .default, handler: yesAction))
+        alert.addAction(UIAlertAction(title: "Cancel".localized, style: .cancel, handler: cancelAction))
         navigationController.present(alert, animated: true)
     }
 
     func errorAlert (title: String, buttomTitle: String, error: Error?, cancelAction:((UIAlertAction) -> Void)?) {
         var alertStyle = UIAlertController.Style.actionSheet
         if (UIDevice.current.userInterfaceIdiom == .pad) {
-          alertStyle = UIAlertController.Style.alert
+            alertStyle = UIAlertController.Style.alert
         }
         let alert: UIAlertController = {
             if let error = error {

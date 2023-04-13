@@ -52,6 +52,18 @@ class ProfileViewController: UIViewController, ProfileViewControllerProtocol, Po
         self.coordinator?.editProfileControllerVC(user: user)
     }
 
+    func moreProfile() {
+        self.coordinator?.alert(title: "SingOut".localized, massage: "wantToGoOut".localized, yesAction: { _ in
+            do {
+                try Firebase.Auth.auth().signOut()
+            } catch {
+                print("Error".localized)
+            }
+            self.coordinator?.pop()
+        }, cancelAction: { _ in
+        })
+    }
+
     // MARK: Delegate ProfileHeaderActivityProtocol
     func newEntry() {
         coordinator?.newPostVC(user: user)

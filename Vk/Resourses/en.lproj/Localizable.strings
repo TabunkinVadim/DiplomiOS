@@ -6,6 +6,10 @@
 
  */
 
+//MArK: LaunchScreenViewController
+
+"Loading" = "Loading...";
+
 //MArK: SrartController
 
 "startRegistration" = "REGISTER";
@@ -70,9 +74,9 @@
 
 "Profile" = "Profile";
 
-//"NewAccount" = "New account";
+"SingOut" = "Sing Out";
 
-//"NewAccountMassege" = "Do you want to create an account?";
+"wantToGoOut" = "Are you sure you want to go out?";
 
 //MArK: FeedCoordinator
 
@@ -103,8 +107,6 @@
 "History" = "History";
 
 "Photo" = "Photo";
-
-//"Exit" = "Exit";
 
 //MArK: ProfileHeaderView
 
@@ -189,8 +191,6 @@
 "Publication" = "Publication";
 
 "newComment" = "New comment";
-
-//"Info" = "Info";
 
 // MARK: InfoViewController
 

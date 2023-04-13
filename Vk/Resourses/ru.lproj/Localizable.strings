@@ -6,6 +6,10 @@
 
  */
 
+//MArK: LaunchScreenViewController
+
+"Loading" = "Загрузка...";
+
 //MArK: SrartController
 
 "startRegistration" = "ЗАРЕГИСТРИРОВАТЬСЯ";
@@ -70,9 +74,9 @@
 
 "Profile" = "Профиль";
 
-//"NewAccount" = "Создание аккаунта";
+"SingOut" = "Выход";
 
-//"NewAccountMassege" = "Вы хотите создать аккаунт?";
+"wantToGoOut" = "Вы уверены, что хотите выйти?";
 
 //MArK: FeedCoordinator
 
@@ -103,8 +107,6 @@
 "History" ="История";
 
 "Photo" = "Фото";
-
-//"Exit" = "Выйти";
 
 //MArK: ProfileHeaderView
 
@@ -189,8 +191,6 @@
 "Publication" = "Публикация";
 
 "newComment" = "Добавить коментарий";
-
-//"Info" = "Инфо";
 
 // MARK: InfoViewController
 
